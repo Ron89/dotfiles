@@ -1,30 +1,8 @@
 "By HE Chong
 
-" Vundle{{{
- set nocompatible               " be iMproved
- filetype off                   " required!
-
- set rtp+=~/.vim/bundle/vundle/
- call vundle#rc()
-
- " let Vundle manage Vundle
- " required!
- Bundle 'gmarik/vundle'
-
- " Bundle for other add-ons
- Bundle 'gerw/vim-latex-suite'
- Bundle 'scrooloose/nerdtree'
- Bundle 'godlygeek/tabular'
- Bundle 'Rip-Rip/clang_complete'
- Bundle 'ervandew/supertab'
- Bundle 'hallison/vim-markdown'
-" Bundle 'vitorgalvao/autoswap_mac'
- Bundle 'shinokada/dragvisuals.vim'
-
- filetype plugin indent on
- " }}}
-
 " General{{{
+ set nocompatible               " be iMproved
+
 " Basic mapping{{{
 let mapleader=','
 let localmapleader='m'
@@ -96,7 +74,31 @@ set tabstop=4
 
 " }}}
 
-" vim plugins{{{
+" Vundle, plugin manager{{{
+ set rtp+=~/.vim/bundle/vundle/ " load vundle
+ call vundle#rc()
+
+ filetype off                   " required by vundle
+
+ " let Vundle manage Vundle
+ " required!
+ Bundle 'gmarik/vundle'
+
+ " Bundle for other add-ons
+ Bundle 'gerw/vim-latex-suite'
+ Bundle 'scrooloose/nerdtree'
+ Bundle 'godlygeek/tabular'
+ Bundle 'Rip-Rip/clang_complete'
+ Bundle 'davidhalter/jedi-vim'
+ Bundle 'ervandew/supertab'
+ Bundle 'hallison/vim-markdown'
+" Bundle 'vitorgalvao/autoswap_mac'
+ Bundle 'shinokada/dragvisuals.vim'
+
+ filetype plugin indent on
+ " }}}
+ "
+" configure for convenient vim plugins{{{
  
  filetype plugin on
  filetype indent on
@@ -123,7 +125,7 @@ endif
 
 " }}}
 
-" Filetype specific{{{
+" Filetype specific(including plugin configure){{{
 
 " Makefile editing{{{
 nnoremap <leader>em :split ./makefile<CR>
@@ -145,12 +147,14 @@ augroup END
 augroup filetype_cpp
 	autocmd!
 	autocmd Filetype cpp,c setlocal foldmethod=syntax
-	autocmd Filetype cpp,c let g:clang_auto_select=1
-	autocmd Filetype cpp,c let g:clang_library_path="/Library/Developer/CommandLineTools/usr/lib/"
-	autocmd Filetype cpp,c let g:clang_close_auto=1
-	autocmd Filetype cpp,c let g:clang_complete_copen=1
-	autocmd Filetype cpp,c let g:clang_hl_errors=1
-	autocmd Filetype cpp,c let g:clang_close_preview=1
+	if exists('g:clang_complete_loaded')
+		autocmd Filetype cpp,c let g:clang_auto_select=1
+		autocmd Filetype cpp,c let g:clang_library_path="/Library/Developer/CommandLineTools/usr/lib/"
+		autocmd Filetype cpp,c let g:clang_close_auto=1
+		autocmd Filetype cpp,c let g:clang_complete_copen=1
+		autocmd Filetype cpp,c let g:clang_hl_errors=1
+		autocmd Filetype cpp,c let g:clang_close_preview=1
+	endif
 augroup END
 " }}}
 
