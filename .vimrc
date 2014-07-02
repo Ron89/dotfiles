@@ -47,7 +47,7 @@ nnoremap tp :tabp<CR>
 " }}}
 
 " Visual effect{{{
-if version > 740
+if version >= 7.4
 	set number
 	augroup buffer_switch
 		autocmd BufEnter * setlocal relativenumber
