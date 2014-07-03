@@ -146,15 +146,13 @@ augroup END
 " C++ specific{{{
 augroup filetype_cpp
 	autocmd!
-	autocmd Filetype cpp,c setlocal foldmethod=syntax
-	if exists('g:clang_complete_loaded')
-		autocmd Filetype cpp,c let g:clang_auto_select=1
-		autocmd Filetype cpp,c let g:clang_library_path="/Library/Developer/CommandLineTools/usr/lib/"
-		autocmd Filetype cpp,c let g:clang_close_auto=1
-		autocmd Filetype cpp,c let g:clang_complete_copen=1
-		autocmd Filetype cpp,c let g:clang_hl_errors=1
-		autocmd Filetype cpp,c let g:clang_close_preview=1
-	endif
+	autocmd filetype cpp,c setlocal foldmethod=syntax
+	autocmd filetype cpp,c let g:clang_auto_select=1
+	autocmd filetype cpp,c let g:clang_library_path="/Library/Developer/CommandLineTools/usr/lib/"
+	autocmd filetype cpp,c let g:clang_close_auto=1
+	autocmd filetype cpp,c let g:clang_complete_copen=1
+	autocmd filetype cpp,c let g:clang_hl_errors=1
+	autocmd filetype cpp,c let g:clang_close_preview=1
 augroup END
 " }}}
 
