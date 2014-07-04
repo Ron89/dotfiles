@@ -103,26 +103,43 @@ set tabstop=4
  filetype plugin on
  filetype indent on
 
-" tabularize{{{
-if exists(":Tabularize")
-	nnoremap<Leader>t& :Tabularize /&<CR>
-"	inoremap<Leader>t& :Tabularize /&<CR>
-	nnoremap<Leader>t| :Tabularize /  |<CR>
-"	inoremap<Leader>t| :Tabularize /  |<CR>
-endif
+" variable initialization {{{
+" dragvisuals -- drag visual block
+let g:DVB_TrimWS = 1
 " }}}
 
-" dragvisual -- drag visual block{{{{
-if exists("*DVB_Drag()")
-	vmap <expr> <LEFT> 	DVB_Drag('left')
-	vmap <expr> <RIGHT>	DVB_Drag('right')
-	vmap <expr> <DOWN> 	DVB_Drag('down')
-	vmap <expr> <UP> 	DVB_Drag('up')
-	vmap <expr> D 		DVB_Duplicate()
-	let g:DVB_TrimWS = 1
-endif
-" }}}
+" function initialization {{{
+function! g:LoadPluginScript ()
+	" Tabular{{{
+	if exists(":Tabularize")
+		vnoremap <Leader>t& :Tabularize /&<CR>
+		nnoremap <Leader>t& :Tabularize /&<CR>
+		"inoremap <Leader>t& :Tabularize /&<CR>
+		vnoremap <Leader>t| :Tabularize /|<CR>
+		nnoremap <Leader>t| :Tabularize /|<CR>
+		"inoremap <Leader>t| :Tabularize /|<CR>
+		vnoremap <Leader>t, :Tabularize /,<CR>
+		nnoremap <Leader>t, :Tabularize /,<CR>
+		"inoremap <Leader>t| :Tabularize /,<CR>
+	endif
+	" }}}
+	" dragvisuals -- drag visual block{{{
+	if exists("*DVB_Drag()")	
+		vmap <expr> <LEFT> 	DVB_Drag('left')
+		vmap <expr> <RIGHT>	DVB_Drag('right')
+		vmap <expr> <DOWN> 	DVB_Drag('down')
+		vmap <expr> <UP> 	DVB_Drag('up')
+	endif
+	if exists("*DVB_Duplicate()")	
+		vmap <expr> D 		DVB_Duplicate()
+	endif
+	" }}}
+endfunction
 
+augroup plugin_initialize
+	autocmd!
+	autocmd VimEnter * call LoadPluginScript()
+augroup END
 " }}}
 
 " Filetype specific(including plugin configure){{{
