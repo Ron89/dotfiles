@@ -21,13 +21,13 @@ inoremap jk <esc>
 " }}}
 
 " bracket editing{{{
-inoremap () ()<++><esc>F)i
-inoremap [] []<++><esc>F]i
-inoremap {} {}<++><esc>F}i
-inoremap <> <><++><esc>F>i
-inoremap '' ''<++><esc>F'i
-inoremap "" ""<++><esc>F"i
-onoremap p i(
+ inoremap () ()<++><esc>F)i
+ inoremap [] []<++><esc>F]i
+ inoremap {} {}<++><esc>F}i
+ inoremap <> <><++><esc>F>i
+ inoremap '' ''<++><esc>F'i
+ inoremap "" ""<++><esc>F"i
+ onoremap p i(
 " }}}
 
 " Omnicomplete{{{
@@ -96,8 +96,8 @@ set tabstop=4
  Bundle 'shinokada/dragvisuals.vim'
 
  filetype plugin indent on
- " }}}
- "
+" }}}
+ 
 " configure for convenient vim plugins{{{
  
  filetype plugin on
@@ -112,15 +112,16 @@ let g:DVB_TrimWS = 1
 function! g:LoadPluginScript ()
 	" Tabular{{{
 	if exists(":Tabularize")
-		vnoremap <Leader>t& :Tabularize /&<CR>
-		nnoremap <Leader>t& :Tabularize /&<CR>
-		"inoremap <Leader>t& :Tabularize /&<CR>
-		vnoremap <Leader>t| :Tabularize /|<CR>
-		nnoremap <Leader>t| :Tabularize /|<CR>
-		"inoremap <Leader>t| :Tabularize /|<CR>
-		vnoremap <Leader>t, :Tabularize /,<CR>
-		nnoremap <Leader>t, :Tabularize /,<CR>
-		"inoremap <Leader>t| :Tabularize /,<CR>
+		vnoremap <Leader>t& :Tabularize/&<CR>
+		nnoremap <Leader>t& :Tabularize/&<CR>
+		vnoremap <Leader>t, :Tabularize/,<CR>
+		nnoremap <Leader>t, :Tabularize/,<CR>
+		vnoremap <Leader>t= :Tabularize/=<CR>
+		nnoremap <Leader>t= :Tabularize/=<CR>
+		vnoremap <Leader>t: :Tabularize/:\zs<CR>
+		nnoremap <Leader>t: :Tabularize/:\zs<CR>
+		" map CucumberTable to keys.
+		inoremap <silent> <Bar>   <Bar><Esc>:call CucumberTable()<CR>a
 	endif
 	" }}}
 	" dragvisuals -- drag visual block{{{
@@ -136,10 +137,29 @@ function! g:LoadPluginScript ()
 	" }}}
 endfunction
 
+" CucumberTable automatically align table separators of
+" a cucumber table('|'). the function of this function
+" requires a working Tabular plugin.
+"
+" Idea and code of CucumberTable function are from tpope. 
+" 	https://gist.github.com/tpope/287147
+function! g:CucumberTable()
+	let p = '^\s*|\s.*\s|\s*$'
+	if exists(':Tabularize') && getline('.') =~# '^\s*|' && (getline(line('.')-1) =~# p || getline(line('.')+1) =~# p)
+		let column = strlen(substitute(getline('.')[0:col('.')],'[^|]','','g'))
+		let position = strlen(matchstr(getline('.')[0:col('.')],'.*|\s*\zs.*'))
+		Tabularize/|/l1
+		normal! 0
+		call search(repeat('[^|]*|',column).'\s\{-\}'.repeat('.',position),'ce',line('.'))
+	endif
+endfunction
+
 augroup plugin_initialize
 	autocmd!
 	autocmd VimEnter * call LoadPluginScript()
 augroup END
+" }}}
+
 " }}}
 
 " Filetype specific(including plugin configure){{{
