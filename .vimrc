@@ -21,13 +21,13 @@ inoremap jk <esc>
 " }}}
 
 " bracket editing{{{
-inoremap () ()<++><esc>F)i
-inoremap [] []<++><esc>F]i
-inoremap {} {}<++><esc>F}i
-inoremap <> <><++><esc>F>i
-inoremap '' ''<++><esc>F'i
-inoremap "" ""<++><esc>F"i
-onoremap p i(
+ inoremap () ()<++><esc>F)i
+ inoremap [] []<++><esc>F]i
+ inoremap {} {}<++><esc>F}i
+ inoremap <> <><++><esc>F>i
+ inoremap '' ''<++><esc>F'i
+ inoremap "" ""<++><esc>F"i
+ onoremap p i(
 " }}}
 
 " Omnicomplete{{{
@@ -96,31 +96,68 @@ set tabstop=4
  Bundle 'shinokada/dragvisuals.vim'
 
  filetype plugin indent on
- " }}}
- "
+" }}}
+ 
 " configure for convenient vim plugins{{{
  
  filetype plugin on
  filetype indent on
 
-" tabularize{{{
-if exists(":Tabularize")
-	nnoremap<Leader>t& :Tabularize /&<CR>
-"	inoremap<Leader>t& :Tabularize /&<CR>
-	nnoremap<Leader>t| :Tabularize /  |<CR>
-"	inoremap<Leader>t| :Tabularize /  |<CR>
-endif
+" variable initialization {{{
+" dragvisuals -- drag visual block
+let g:DVB_TrimWS = 1
 " }}}
 
-" dragvisual -- drag visual block{{{{
-if exists("*DVB_Drag()")
-	vmap <expr> <LEFT> 	DVB_Drag('left')
-	vmap <expr> <RIGHT>	DVB_Drag('right')
-	vmap <expr> <DOWN> 	DVB_Drag('down')
-	vmap <expr> <UP> 	DVB_Drag('up')
-	vmap <expr> D 		DVB_Duplicate()
-	let g:DVB_TrimWS = 1
-endif
+" function initialization {{{
+function! g:LoadPluginScript ()
+	" Tabular{{{
+	if exists(":Tabularize")
+		vnoremap <Leader>t& :Tabularize/&<CR>
+		nnoremap <Leader>t& :Tabularize/&<CR>
+		vnoremap <Leader>t, :Tabularize/,<CR>
+		nnoremap <Leader>t, :Tabularize/,<CR>
+		vnoremap <Leader>t= :Tabularize/=<CR>
+		nnoremap <Leader>t= :Tabularize/=<CR>
+		vnoremap <Leader>t: :Tabularize/:\zs<CR>
+		nnoremap <Leader>t: :Tabularize/:\zs<CR>
+		" map CucumberTable to keys.
+		inoremap <silent> <Bar>   <Bar><Esc>:call CucumberTable()<CR>a
+	endif
+	" }}}
+	" dragvisuals -- drag visual block{{{
+	if exists("*DVB_Drag()")	
+		vmap <expr> <LEFT> 	DVB_Drag('left')
+		vmap <expr> <RIGHT>	DVB_Drag('right')
+		vmap <expr> <DOWN> 	DVB_Drag('down')
+		vmap <expr> <UP> 	DVB_Drag('up')
+	endif
+	if exists("*DVB_Duplicate()")	
+		vmap <expr> D 		DVB_Duplicate()
+	endif
+	" }}}
+endfunction
+
+" CucumberTable automatically align table separators of
+" a cucumber table('|'). the function of this function
+" requires a working Tabular plugin.
+"
+" Idea and code of CucumberTable function are from tpope. 
+" 	https://gist.github.com/tpope/287147
+function! g:CucumberTable()
+	let p = '^\s*|\s.*\s|\s*$'
+	if exists(':Tabularize') && getline('.') =~# '^\s*|' && (getline(line('.')-1) =~# p || getline(line('.')+1) =~# p)
+		let column = strlen(substitute(getline('.')[0:col('.')],'[^|]','','g'))
+		let position = strlen(matchstr(getline('.')[0:col('.')],'.*|\s*\zs.*'))
+		Tabularize/|/l1
+		normal! 0
+		call search(repeat('[^|]*|',column).'\s\{-\}'.repeat('.',position),'ce',line('.'))
+	endif
+endfunction
+
+augroup plugin_initialize
+	autocmd!
+	autocmd VimEnter * call LoadPluginScript()
+augroup END
 " }}}
 
 " }}}
@@ -146,15 +183,13 @@ augroup END
 " C++ specific{{{
 augroup filetype_cpp
 	autocmd!
-	autocmd Filetype cpp,c setlocal foldmethod=syntax
-	if exists('g:clang_complete_loaded')
-		autocmd Filetype cpp,c let g:clang_auto_select=1
-		autocmd Filetype cpp,c let g:clang_library_path="/Library/Developer/CommandLineTools/usr/lib/"
-		autocmd Filetype cpp,c let g:clang_close_auto=1
-		autocmd Filetype cpp,c let g:clang_complete_copen=1
-		autocmd Filetype cpp,c let g:clang_hl_errors=1
-		autocmd Filetype cpp,c let g:clang_close_preview=1
-	endif
+	autocmd filetype cpp,c setlocal foldmethod=syntax
+	autocmd filetype cpp,c let g:clang_auto_select=1
+	autocmd filetype cpp,c let g:clang_library_path="/Library/Developer/CommandLineTools/usr/lib/"
+	autocmd filetype cpp,c let g:clang_close_auto=1
+	autocmd filetype cpp,c let g:clang_complete_copen=1
+	autocmd filetype cpp,c let g:clang_hl_errors=1
+	autocmd filetype cpp,c let g:clang_close_preview=1
 augroup END
 " }}}
 
