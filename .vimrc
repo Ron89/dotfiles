@@ -109,7 +109,7 @@ let g:DVB_TrimWS = 1
 " }}}
 
 " function initialization {{{
-function! g:LoadPluginScript ()
+function! g:LoadPluginScript()
 	" Tabular{{{
 	if exists(":Tabularize")
 		vnoremap <Leader>t& :Tabularize/&<CR>
@@ -121,7 +121,7 @@ function! g:LoadPluginScript ()
 		vnoremap <Leader>t: :Tabularize/:\zs<CR>
 		nnoremap <Leader>t: :Tabularize/:\zs<CR>
 		" map CucumberTable to keys.
-		inoremap <silent> <Bar>   <Bar><Esc>:call CucumberTable()<CR>a
+		inoremap <silent> <Bar>   <Bar><Esc>:call g:CucumberTable()<CR>a
 	endif
 	" }}}
 	" dragvisuals -- drag visual block{{{
@@ -156,7 +156,7 @@ endfunction
 
 augroup plugin_initialize
 	autocmd!
-	autocmd VimEnter * call LoadPluginScript()
+	autocmd VimEnter * call g:LoadPluginScript()
 augroup END
 " }}}
 
