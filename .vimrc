@@ -35,18 +35,61 @@ set complete+=.,w,b,u,U,i,d,k
 " }}}
 
 " Editing environment{{{
+" ruler, statusline, tabline
 set ruler
 set statusline=%f\ -\ Filetype:\ %y\ -\ %4l/%4L
-set rulerformat=%25(%f\ %c-%l/%L%V\ %p%%%)
+set rulerformat=%35(%f\ %c-%l/%L%V\ %p%%%)
 set backspace=indent,eol,start
-" }}}
 
-" Tab Jumping{{{
-nnoremap tn :tabn<CR>
-nnoremap tp :tabp<CR>
-" }}}
+" tabline
+function! MyTabLabel(n)
+	let buflist = tabpagebuflist(a:n)
+	let winnr = tabpagewinnr(a:n)
+	" define max length of tablabel based on the number of tabs
+	let numtabs = tabpagenr('$')
+	" account for space padding between tabs, and the close button
+	let maxlen = ( &columns - ( numtabs * 2 ) - 4 ) / numtabs
 
-" Visual effect{{{
+	let tablabel = bufname(buflist[winnr - 1])
+	while strlen( tablabel ) < 4
+		let tablabel = tablabel . " "
+	endwhile
+	" modify filename
+	let tablabel = fnamemodify( tablabel, ':~:.' )
+	let tablabel = strpart( tablabel, 0, maxlen )
+	return tablabel
+endfunction
+
+function! MyTabLine()
+	let s = ''
+	for i in range(tabpagenr('$'))
+		" select the highlighting
+		if i + 1 == tabpagenr()
+			let s .= '%#TabLineSel#'
+		else
+			let s .= '%#TabLine#'
+		endif
+
+		" set the tab page number (for mouse clicks)
+		let s .= '%' . (i + 1) . 'T'
+
+		" the label is made by MyTabLabel()
+		let s .= ' %{MyTabLabel(' . (i + 1) . ')} |'
+	endfor
+
+	" after the last tab fill with TabLineFill and reset tab page nr
+	let s .= '%#TabLineFill#%T'
+
+	" right-align the label to close the current tab page
+	if tabpagenr('$') > 1
+		let s .= '%=%#TabLine#%999Xclose'
+	endif
+
+	return s
+endfunction
+set tabline=%!MyTabLine()
+
+" number/relative number
 if version >= 7.4
 	set number
 	augroup buffer_switch
@@ -62,7 +105,14 @@ endif
 
 "set spell
 syntax on
+
 " }}}
+
+" Tab Jumping{{{
+nnoremap tn :tabn<CR>
+nnoremap tp :tabp<CR>
+" }}}
+
 
 " Indent{{{
 set autoindent
@@ -185,7 +235,11 @@ augroup filetype_cpp
 	autocmd!
 	autocmd filetype cpp,c setlocal foldmethod=syntax
 	autocmd filetype cpp,c let g:clang_auto_select=1
-	autocmd filetype cpp,c let g:clang_library_path="/Library/Developer/CommandLineTools/usr/lib/"
+	if has("osx")
+		autocmd filetype cpp,c let g:clang_library_path="/Library/Developer/CommandLineTools/usr/lib/"
+	else 
+		autocmd filetype cpp,c let g:clang_library_path="/usr/lib"
+	endif
 	autocmd filetype cpp,c let g:clang_close_auto=1
 	autocmd filetype cpp,c let g:clang_complete_copen=1
 	autocmd filetype cpp,c let g:clang_hl_errors=1
