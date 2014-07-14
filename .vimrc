@@ -74,7 +74,7 @@ function! MyTabLine()
 		let s .= '%' . (i + 1) . 'T'
 
 		" the label is made by MyTabLabel()
-		let s .= ' %{MyTabLabel(' . (i + 1) . ')} |'
+		let s .= ' %{MyTabLabel(' . (i + 1) . ')} '
 	endfor
 
 	" after the last tab fill with TabLineFill and reset tab page nr
@@ -82,11 +82,12 @@ function! MyTabLine()
 
 	" right-align the label to close the current tab page
 	if tabpagenr('$') > 1
-		let s .= '%=%#TabLine#%999Xclose'
+		let s .= '%=%#TabLine#%999XX'
 	endif
 
 	return s
 endfunction
+
 set tabline=%!MyTabLine()
 
 " number/relative number
@@ -112,7 +113,6 @@ syntax on
 nnoremap tn :tabn<CR>
 nnoremap tp :tabp<CR>
 " }}}
-
 
 " Indent{{{
 set autoindent
@@ -235,7 +235,7 @@ augroup filetype_cpp
 	autocmd!
 	autocmd filetype cpp,c setlocal foldmethod=syntax
 	autocmd filetype cpp,c let g:clang_auto_select=1
-	if has("osx")
+	if has("mac")
 		autocmd filetype cpp,c let g:clang_library_path="/Library/Developer/CommandLineTools/usr/lib/"
 	else 
 		autocmd filetype cpp,c let g:clang_library_path="/usr/lib"
