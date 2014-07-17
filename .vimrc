@@ -27,7 +27,6 @@ inoremap jk <esc>
  inoremap <> <><++><esc>F>i
  inoremap '' ''<++><esc>F'i
  inoremap "" ""<++><esc>F"i
- onoremap p i(
 " }}}
 
 " Omnicomplete{{{
@@ -267,8 +266,7 @@ augroup filetype_Tex
 	autocmd!
 	autocmd Filetype tex setlocal dictionary+="~/.vim/bundle/vim-latex-suite/ftplugin/latex-suite/dictionaries/dictionary"
 	autocmd Filetype tex setlocal dictionary+="/usr/share/dict/words"
-"	autocmd Filetype tex setlocal dictionary+="./reference.bib"
-	autocmd Filetype tex :execute "nnoremap <buffer> <leader>vr :vs ~/refLibrary.bib<CR>"
+	autocmd Filetype tex inoremap <buffer> ``'' ``''<++><esc>F`a
 	autocmd Filetype tex setlocal spell
 	autocmd Filetype tex setlocal tw=80
 augroup END
