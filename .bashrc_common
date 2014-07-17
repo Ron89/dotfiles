@@ -1,3 +1,18 @@
+
+# vars for fast cd(used when cdable_vars is set)
+export ENVIRONMENT="~/projects/vimrc/"
+export P53MODEL="~/projects/p53oscillation/"
+
+# fast push
+alias gitpushenv="pushd $ENVIRONMENT >>/dev/null 2>&1 && ( \
+	git add -A && git commit -m \"fast commit\" && \
+	git push origin ) ;popd >>/dev/null 2>&1"
+alias gitpushp53="pushd $P53MODEL; git push bucket ;popd"
+# fast pull
+#alias gitpushenv="pushd $ENVIRONMENT; git pull origin ;popd"
+#alias gitpushp53="pushd $P53MODEL; git pull bucket ;popd"
+
+
 # optional behavior
 shopt -s cmdhist		# keep multi line command together
 shopt -s autocd			# if command same as subfolder name, command parsed as cd.
