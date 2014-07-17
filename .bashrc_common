@@ -7,8 +7,9 @@ shopt -s checkjobs		# prompt running/stopped jobs attached to the shell on exiti
 #shopt -s dirspell		# minor error when spelling dir name will be corrected
 shopt -s extglob		# use extended pattern when globbing
 shopt -s dotglob		# include '.' in file expansion
-shopt -s histappend 	#append to history, don't overwrite it.
-shopt -s histreedit 	#given the chance to reedit failed substitution
+shopt -s histappend 	# append to history, don't overwrite it.
+shopt -s histreedit 	# given the chance to reedit failed substitution
+shopt -s checkwinsize 	# update the values of LINES and COLUMNS based on window size.
 
 # vars for fast cd(used when cdable_vars is set)
 
@@ -25,12 +26,12 @@ set show-all-if-ambiguous on
 set completion-ignore-case on
 
 # save and reload history after each command
-PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+echo $PROMPT_COMMAND | grep -q "history -a; history -c; history -r;"
+if [ $? -ne 0 ]; then
+	export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+fi
 
 # sort out environment variables, remove replicated item in them
 PATH=`awk -F: '{for (i=1;i<=NF;i++) { if ( !x[$i]++ ) printf("%s:",$i); }}' <<< $PATH`
 PATH=`echo $PATH | sed s:.$::`
 export PATH
-PROMPT_COMMAND=`awk -F: '{for (i=1;i<=NF;i++) { if ( !x[$i]++ ) printf("%s;",$i); }}' <<< $PROMPT_COMMAND`
-PROMPT_COMMAND=`echo $PROMPT_COMMAND | sed s:.$::`
-export PROMPT_COMMAND
