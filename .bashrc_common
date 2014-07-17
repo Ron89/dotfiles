@@ -4,10 +4,13 @@ export ENVIRONMENT="~/projects/vimrc/"
 export P53MODEL="~/projects/p53oscillation/"
 
 # fast push
-alias gitpushenv="pushd $ENVIRONMENT >>/dev/null 2>&1 && ( \
+alias gitpushenv="(pushd $ENVIRONMENT && ( \
 	git add -A && git commit -m \"fast commit\" && \
-	git push origin ) ;popd >>/dev/null 2>&1"
+	git push origin ) ;popd)"
 alias gitpushp53="pushd $P53MODEL; git push bucket ;popd"
+alias gitpushp53="pushd $P53MODEL && ( \
+	git add -A && git commit -m \"fast commit\" && \
+	git push origin ) ;popd"
 # fast pull
 #alias gitpushenv="pushd $ENVIRONMENT; git pull origin ;popd"
 #alias gitpushp53="pushd $P53MODEL; git pull bucket ;popd"
