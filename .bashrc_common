@@ -1,8 +1,10 @@
+# To use, add a line at the end of ~/.bashrc to source this file.
+
 # vars for fast cd(used when cdable_vars is set)
 export ENVCONFIG="$HOME/projects/vimrc"
 export SIMTOOLCHAIN="$HOME/projects/networkSimulation"
 
-# fast push
+# fast push 
 alias gitpushenv="(pushd $ENVCONFIG && ( \
 	git add -A && git commit -m \"fast commit\" && \
 	git push origin ) ;popd)"
@@ -39,19 +41,18 @@ export HISTFILESIZE=100000
 
 # key bindings 
 export EDITOR=vim
-bind '"\e[A":history-search-backward'
-bind '"\e[B":history-search-forward'
+bind '"\e[A":history-search-backward' 	# smart search on UP arrow
+bind '"\e[B":history-search-forward' 	# smart search on DOWN arrow
 bind 'C-f:forward-word'
 bind 'C-b:backward-word'
 bind 'C-e:edit-and-execute-command'
 bind 'C-d:kill-word'
-bind 'C-i:menu-complete'
+bind 'C-i:menu-complete' 			# C-i is how Tab passes to shell. Menu-complete is better
+									# than mere complete
 
-# save and reload history after each command
-echo $PROMPT_COMMAND | grep -q "history -a; history -c; history -r;"
-if [ $? -ne 0 ]; then
-	export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
-fi
+# save and reload history after each command(first remove early history configs)
+PROMPT_COMMAND=`echo $PROMPT_COMMAND | sed 's:history -[a-z];[ ]*::'`
+export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 
 # sort out environment variables, remove replicated item in them
 PATH=`awk -F: '{for (i=1;i<=NF;i++) { if ( !x[$i]++ ) printf("%s:",$i); }}' <<< $PATH`
