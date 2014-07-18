@@ -3,6 +3,22 @@
 " General{{{
  set nocompatible               " be iMproved
 
+" copy mode used when copying code from system pasteboard {{{
+function! g:EnterCopyMode()
+	mapclear!
+	setlocal noautoindent
+	setlocal nosmartindent
+	setlocal nocindent
+	setlocal indentexpr=
+	filetype plugin indent off
+	filetype indent off
+	
+	" retain 
+	" nnoremap <leader>ev :vsplit $MYVIMRC<CR>
+	" nnoremap <leader>sv :source $MYVIMRC<CR>:call g:LoadPluginScript()<CR>
+endfunction
+"}}}
+
 " Basic mapping{{{
 let mapleader=','
 let localmapleader='m'
@@ -13,6 +29,7 @@ vnoremap L $
 nnoremap o o<esc>
 nnoremap O O<esc>
 nnoremap <CR> i<CR><esc>
+nnoremap <Leader>cm :call g:EnterCopyMode()<CR>
 " }}}
 
 " Mode switch{{{
@@ -184,6 +201,56 @@ function! g:LoadPluginScript()
 		vmap <expr> D 		DVB_Duplicate()
 	endif
 	" }}}
+	" place-holder jumping, copied from Vim-Latex {{{
+	if exists("*IMAP_Jumpfunc()")
+		" Maps for IMAP_Jumpfunc {{{
+		"
+		" These mappings use <Plug> and thus provide for easy user customization. When
+		" the user wants to map some other key to jump forward, he can do for
+		" instance:
+		"   nmap ,f   <plug>IMAP_JumpForward
+		" etc.
+
+		" jumping forward and back in insert mode.
+		imap <silent> <Plug>IMAP_JumpForward    <c-r>=IMAP_Jumpfunc('',0)<CR>
+		imap <silent> <Plug>IMAP_JumpBack       <c-r>=IMAP_Jumpfunc('b',0)<CR>
+
+		" jumping in normal mode
+		nmap <silent> <Plug>IMAP_JumpForward        i<c-r>=IMAP_Jumpfunc('',0)<CR>
+		nmap <silent> <Plug>IMAP_JumpBack           i<c-r>=IMAP_Jumpfunc('b',0)<CR>
+
+		" deleting the present selection and then jumping forward.
+		vmap <silent> <Plug>IMAP_DeleteAndJumpForward       "_<Del>i<c-r>=IMAP_Jumpfunc('',0)<CR>
+		vmap <silent> <Plug>IMAP_DeleteAndJumpBack          "_<Del>i<c-r>=IMAP_Jumpfunc('b',0)<CR>
+
+		" jumping forward without deleting present selection.
+		vmap <silent> <Plug>IMAP_JumpForward       <C-\><C-N>i<c-r>=IMAP_Jumpfunc('',0)<CR>
+		vmap <silent> <Plug>IMAP_JumpBack          <C-\><C-N>`<i<c-r>=IMAP_Jumpfunc('b',0)<CR>
+
+		" }}}
+		" Default maps for IMAP_Jumpfunc {{{
+		" map only if there is no mapping already. allows for user customization.
+		" NOTE: Default mappings for jumping to the previous placeholder are not
+		"       provided. It is assumed that if the user will create such mappings
+		"       hself if e so desires.
+		if !hasmapto('<Plug>IMAP_JumpForward', 'i')
+			imap <C-J> <Plug>IMAP_JumpForward
+		endif
+		if !hasmapto('<Plug>IMAP_JumpForward', 'n')
+			nmap <C-J> <Plug>IMAP_JumpForward
+		endif
+		if exists('g:Imap_StickyPlaceHolders') && g:Imap_StickyPlaceHolders
+			if !hasmapto('<Plug>IMAP_JumpForward', 'v')
+				vmap <C-J> <Plug>IMAP_JumpForward
+			endif
+		else
+			if !hasmapto('<Plug>IMAP_DeleteAndJumpForward', 'v')
+				vmap <C-J> <Plug>IMAP_DeleteAndJumpForward
+			endif
+		endif
+		" }}}
+	endif
+	" }}}
 endfunction
 
 " CucumberTable automatically align table separators of
@@ -218,8 +285,8 @@ nnoremap <leader>em :split ./makefile<CR>
 " }}}
 
 " Vimrc editing{{{
-nnoremap <leader>ev :vsplit $MYVIMRC<CR>
-nnoremap <leader>sv :source $MYVIMRC<CR>
+nnoremap <Leader>ev :vsplit $MYVIMRC<CR>
+nnoremap <Leader>sv :source $MYVIMRC<CR>:call g:LoadPluginScript()<CR>
 
 " Vim folding{{{
 augroup filetype_vim
