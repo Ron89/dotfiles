@@ -47,11 +47,9 @@ bind 'C-e:edit-and-execute-command'
 bind 'C-d:kill-word'
 bind 'C-i:menu-complete'
 
-# save and reload history after each command
-echo $PROMPT_COMMAND | grep -q "history -a; history -c; history -r;"
-if [ $? -ne 0 ]; then
-	export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
-fi
+# save and reload history after each command(first remove early history configs)
+PROMPT_COMMAND=`echo $PROMPT_COMMAND | sed 's:history -[a-z];[ ]*::'`
+export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 
 # sort out environment variables, remove replicated item in them
 PATH=`awk -F: '{for (i=1;i<=NF;i++) { if ( !x[$i]++ ) printf("%s:",$i); }}' <<< $PATH`
