@@ -1,16 +1,16 @@
 # vars for fast cd(used when cdable_vars is set)
-export ENVIRONMENT="~/projects/vimrc"
-export SIMTOOLCHAIN="~/projects/networkSimulation"
+export ENVCONFIG="$HOME/projects/vimrc"
+export SIMTOOLCHAIN="$HOME/projects/networkSimulation"
 
 # fast push
-alias gitpushenv="(pushd $ENVIRONMENT && ( \
+alias gitpushenv="(pushd $ENVCONFIG && ( \
 	git add -A && git commit -m \"fast commit\" && \
 	git push origin ) ;popd)"
 alias gitpushsimtool="(pushd $SIMTOOLCHAIN && ( \
 	git add -A && git commit -m \"fast commit\" && \
 	git push bucket ) ;popd)"
 # fast pull
-alias gitpullenv="(pushd $ENVIRONMENT && ( \
+alias gitpullenv="(pushd $ENVCONFIG && ( \
 	git pull origin ) ;popd)"
 alias gitpullsimtool="(pushd $SIMTOOLCHAIN && ( \
 	git pull bucket ) ;popd)"
