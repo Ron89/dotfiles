@@ -8,12 +8,12 @@ alias gitpushenv="(pushd $ENVIRONMENT && ( \
 	git push origin ) ;popd)"
 alias gitpushsimtool="(pushd $SIMTOOLCHAIN && ( \
 	git add -A && git commit -m \"fast commit\" && \
-	git push origin ) ;popd)"
+	git push bucket ) ;popd)"
 # fast pull
 alias gitpullenv="(pushd $ENVIRONMENT && ( \
 	git pull origin ) ;popd)"
 alias gitpullsimtool="(pushd $SIMTOOLCHAIN && ( \
-	git pull origin ) ;popd)"
+	git pull bucket ) ;popd)"
 #alias gitpushp53="pushd $P53MODEL; git pull bucket ;popd"
 
 
