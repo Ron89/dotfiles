@@ -1,5 +1,7 @@
 "By HE Chong
 
+let g:SuperTabLocation="~/.vim/bundle/supertab/plugin/supertab.vim"
+
 " General{{{
  set nocompatible               " be iMproved
 
@@ -15,7 +17,7 @@ function! g:EnterCopyMode()
 	
 	" retain 
 	" nnoremap <leader>ev :vsplit $MYVIMRC<CR>
-	" nnoremap <leader>sv :source $MYVIMRC<CR>:call g:LoadPluginScript()<CR>
+	" nnoremap <leader>sv :source $MYVIMRC<CR>:call LoadPluginScript()<CR>
 endfunction
 "}}}
 
@@ -175,7 +177,10 @@ let g:DVB_TrimWS = 1
 " }}}
 
 " function initialization {{{
-function! g:LoadPluginScript()
+function! LoadPluginScript()
+	filetype plugin on
+	filetype indent on
+	filetype plugin indent on
 	" Tabular{{{
 	if exists(":Tabularize")
 		vnoremap <Leader>t& :Tabularize/&<CR>
@@ -251,6 +256,17 @@ function! g:LoadPluginScript()
 		" }}}
 	endif
 	" }}}
+	" supertab reload {{{
+	if exists("*SuperTab()")
+		if exists('g:loaded_supertab')
+			unlet g:loaded_supertab
+		endif
+		if exists('complType')
+			unlet complType
+		endif
+		exec ":source" g:SuperTabLocation
+	endif
+	"}}}
 endfunction
 
 " CucumberTable automatically align table separators of
@@ -272,7 +288,7 @@ endfunction
 
 augroup plugin_initialize
 	autocmd!
-	autocmd VimEnter * call g:LoadPluginScript()
+	autocmd VimEnter * call LoadPluginScript()
 augroup END
 " }}}
 
@@ -286,7 +302,7 @@ nnoremap <leader>em :split ./makefile<CR>
 
 " Vimrc editing{{{
 nnoremap <Leader>ev :vsplit $MYVIMRC<CR>
-nnoremap <Leader>sv :source $MYVIMRC<CR>:call g:LoadPluginScript()<CR>
+nnoremap <Leader>sv :source $MYVIMRC<CR>:call LoadPluginScript()<CR>
 
 " Vim folding{{{
 augroup filetype_vim
