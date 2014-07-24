@@ -1,7 +1,7 @@
 # To use, add a line at the end of ~/.bashrc to source this file.
 
 # vars for fast cd(used when cdable_vars is set)
-export ENVCONFIG="$HOME/projects/vimrc"
+export ENVCONFIG="$HOME/projects/env-config"
 export SIMTOOLCHAIN="$HOME/projects/networkSimulation"
 
 # fast push 
