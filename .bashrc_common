@@ -51,7 +51,7 @@ bind 'C-i:menu-complete' 			# C-i is how Tab passes to shell. Menu-complete is b
 									# than mere complete
 
 # save and reload history after each command(first remove early history configs)
-PROMPT_COMMAND=`echo $PROMPT_COMMAND | sed 's:history -[a-z];[ ]*::'`
+PROMPT_COMMAND=`echo $PROMPT_COMMAND | sed 's:history -[a-z];[ ]*::g'`
 export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 
 # sort out environment variables, remove replicated item in them
