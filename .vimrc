@@ -109,17 +109,19 @@ endfunction
 set tabline=%!MyTabLine()
 
 " number/relative number
-if version >= 7.4
+if (version == 7.4)+(version==704)
 	set number
 	augroup buffer_switch
 		autocmd BufEnter * setlocal relativenumber
 		autocmd BufLeave * setlocal norelativenumber
 	augroup END
-else
+elseif (version == 7.3)+(version==703)
 	augroup buffer_switch
 		autocmd BufEnter * setlocal relativenumber
 		autocmd BufLeave * setlocal number
 	augroup END
+else
+	set number
 endif
 
 "set spell
