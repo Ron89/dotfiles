@@ -1,9 +1,12 @@
 "By HE Chong
 
-let g:SuperTabLocation="~/.vim/bundle/supertab/plugin/supertab.vim"
-
 " General{{{
  set nocompatible               " be iMproved
+
+ filetype off                   " required by vundle
+ filetype plugin indent on
+ filetype plugin on
+ filetype indent on
 
 " Basic mapping{{{
 let mapleader=','
@@ -37,9 +40,14 @@ set complete+=.,w,b,u,U,i,d,k
 " }}}
 
 " Editing environment{{{
+" mouse
+"if has("mouse")
+"	set mouse=nc
+"endif
+
 " ruler, statusline, tabline
 set ruler
-set statusline=%f\ -\ Filetype:\ %y\ -\ %4l/%4L
+set statusline=%f\ -\ Filetype:\ %y\ -\ %c-%l/%L
 set rulerformat=%35(%f\ %c-%l/%L%V\ %p%%%)
 set backspace=indent,eol,start
 
@@ -96,11 +104,13 @@ set tabline=%!MyTabLine()
 if (version == 7.4)+(version==704)
 	set number
 	augroup buffer_switch
+		autocmd!
 		autocmd BufEnter * setlocal relativenumber
 		autocmd BufLeave * setlocal norelativenumber
 	augroup END
 elseif (version == 7.3)+(version==703)
 	augroup buffer_switch
+		autocmd!
 		autocmd BufEnter * setlocal relativenumber
 		autocmd BufLeave * setlocal number
 	augroup END
@@ -132,7 +142,6 @@ set tabstop=4
  set rtp+=~/.vim/bundle/vundle/ " load vundle
  call vundle#rc()
 
- filetype off                   " required by vundle
 
  " let Vundle manage Vundle
  " required!
@@ -150,14 +159,10 @@ set tabstop=4
  Bundle 'shinokada/dragvisuals.vim'
  Bundle 'ron89/vim-copymode'
 
- filetype plugin indent on
 " }}}
  
 " configure for convenient vim plugins{{{
  
- filetype plugin on
- filetype indent on
-
 " variable initialization {{{
 " dragvisuals -- drag visual block
 let g:DVB_TrimWS = 1
@@ -249,6 +254,15 @@ augroup filetype_cpp
 	autocmd filetype cpp,c let g:clang_complete_copen=1
 	autocmd filetype cpp,c let g:clang_hl_errors=1
 	autocmd filetype cpp,c let g:clang_close_preview=1
+augroup END
+" }}}
+
+" python specific {{{
+augroup filetype_python
+	autocmd!
+	autocmd filetype python setlocal tabstop=4
+	autocmd filetype python setlocal sw=4
+	autocmd filetype python setlocal softtabstop=0
 augroup END
 " }}}
 
