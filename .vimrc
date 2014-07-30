@@ -157,10 +157,12 @@ set tabstop=4
  Bundle 'gerw/vim-latex-suite'
  Bundle 'scrooloose/nerdtree'
  Bundle 'godlygeek/tabular'
- Bundle 'Rip-Rip/clang_complete'
- Bundle 'davidhalter/jedi-vim'
+if version>=703 || (version>7.3 && version<10.0)
+	Bundle 'Rip-Rip/clang_complete'
+	Bundle 'davidhalter/jedi-vim'
+endif
  Bundle 'ervandew/supertab'
- Bundle 'hallison/vim-markdown'
+ Bundle 'plasticboy/vim-markdown'
 " Bundle 'vitorgalvao/autoswap_mac'
  Bundle 'shinokada/dragvisuals.vim'
  Bundle 'ron89/vim-copymode'
