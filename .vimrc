@@ -41,11 +41,16 @@ set complete+=.,w,b,u,U,i,d,k
 
 " Editing environment{{{
 " mouse
-"if has("mouse")
-"	set mouse=nc
-"endif
+if has("mouse")
+	set mouse=nc
+endif
 
-" ruler, statusline, tabline
+"clipboard
+if has('clipboard')
+	set clipboard+=unnamed,unnamedplus
+endif
+
+" ruler, statusline, tabline {{{
 set ruler
 set statusline=%f\ -\ Filetype:\ %y\ -\ %c-%l/%L
 set rulerformat=%35(%f\ %c-%l/%L%V\ %p%%%)
@@ -99,6 +104,7 @@ function! MyTabLine()
 endfunction
 
 set tabline=%!MyTabLine()
+" }}}
 
 " number/relative number
 if (version == 7.4)+(version==704)
