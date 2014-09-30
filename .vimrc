@@ -3,6 +3,9 @@
 " General{{{
  set nocompatible               " be iMproved
 
+" detect OS type
+let s:os=substitute(system('uname'),'\n','','')
+
  filetype off                   " required by vundle
  filetype plugin indent on
  filetype plugin on
@@ -253,9 +256,9 @@ augroup filetype_cpp
 	autocmd!
 	autocmd filetype cpp,c setlocal foldmethod=syntax
 	autocmd filetype cpp,c let g:clang_auto_select=1
-	if has("mac")
+	if s:os == 'Darwin' || s:os == 'Mac'
 		autocmd filetype cpp,c let g:clang_library_path="/Library/Developer/CommandLineTools/usr/lib/"
-	else 
+	elseif os == 'Linux'
 		autocmd filetype cpp,c let g:clang_library_path="/usr/lib"
 	endif
 	autocmd filetype cpp,c let g:clang_close_auto=1

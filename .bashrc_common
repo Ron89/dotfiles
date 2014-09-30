@@ -21,16 +21,22 @@ alias gitpullsimtool="(pushd $SIMTOOLCHAIN && ( \
 
 # optional behavior
 shopt -s cmdhist		# keep multi line command together
-shopt -s autocd			# if command same as subfolder name, command parsed as cd.
 shopt -s cdspell		# minor error in spelling cd will be corrected.
 shopt -s cdable_vars 	# able to use variable for fast cd directory change.
-shopt -s checkjobs		# prompt running/stopped jobs attached to the shell on exiting.
-shopt -s dirspell		# minor error when spelling dir name will be corrected
 shopt -s extglob		# use extended pattern when globbing
 shopt -s dotglob		# include '.' in file expansion
 shopt -s histappend 	# append to history, don't overwrite it.
 shopt -s histreedit 	# given the chance to reedit failed substitution
 shopt -s checkwinsize 	# update the values of LINES and COLUMNS based on window size.
+
+BASH_VER=`echo $BASH_VERSION | sed s:"\([0-9\.]*\).*":"\1":`
+BASH_VER_MAIN=`echo $BASH_VERSION | cut -d '.' -f 1`
+BASH_VER_SUB=`echo $BASH_VERSION | cut -d '.' -f 2`
+if [ "$BASH_VER_MAIN" -gt "4" ]; then
+	shopt -s autocd			# if command same as subfolder name, command parsed as cd.
+	shopt -s checkjobs		# prompt running/stopped jobs attached to the shell on exiting.
+	shopt -s dirspell		# minor error when spelling dir name will be corrected
+fi
 
 # vars for fast cd(used when cdable_vars is set)
 
