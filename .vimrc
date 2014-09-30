@@ -2,6 +2,7 @@
 
 " General{{{
  set nocompatible               " be iMproved
+ set shell=/bin/sh 				" avoid complications in shell commands
 
 " detect OS type
 let s:os=substitute(system('uname'),'\n','','')
@@ -258,7 +259,7 @@ augroup filetype_cpp
 	autocmd filetype cpp,c let g:clang_auto_select=1
 	if s:os == 'Darwin' || s:os == 'Mac'
 		autocmd filetype cpp,c let g:clang_library_path="/Library/Developer/CommandLineTools/usr/lib/"
-	elseif os == 'Linux'
+	elseif s:os == 'Linux'
 		autocmd filetype cpp,c let g:clang_library_path="/usr/lib"
 	endif
 	autocmd filetype cpp,c let g:clang_close_auto=1
