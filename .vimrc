@@ -170,6 +170,7 @@ endif
 " Bundle 'vitorgalvao/autoswap_mac'
  Bundle 'shinokada/dragvisuals.vim'
  Bundle 'ron89/vim-copymode'
+ Bundle 'vim-scripts/gnuplot.vim'
 
 " }}}
  
