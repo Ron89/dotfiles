@@ -4,6 +4,7 @@
  set nocompatible               " be iMproved
  set shell=/bin/sh 				" avoid complications in shell commands
 
+
 " detect OS type
 let s:os=substitute(system('uname'),'\n','','')
 
@@ -56,8 +57,8 @@ endif
 
 " ruler, statusline, tabline {{{
 set ruler
-set statusline=%f\ -\ Filetype:\ %y\ -\ %c-%l/%L
-set rulerformat=%35(%f\ %c-%l/%L%V\ %p%%%)
+set statusline=%f\ -\ Filetype:\ %y\ -\ %c%V-%l/%L
+set rulerformat=%35(%f\ %c%V-%l/%L\ %p%%%)
 set backspace=indent,eol,start
 
 " tabline
@@ -146,6 +147,64 @@ set sw=4
 set tabstop=4
 " }}}
 
+" Autosaving{{{
+"
+" only write if needed and update the start time after the save
+set updatetime=1000 	" very frequent update time ensure that CursorHold event triggers.
+function! UpdateFile() 	" auto-update routine
+	if (&mod==1)
+		if (@%=="") 
+			echom "Just for the heads up. You haven't name name file yet!"
+		else
+			if ((localtime() - b:start_time) >= 60)
+				update
+				let b:start_time=localtime()
+			endif
+		endif
+	endif
+endfunction
+
+augroup AutoSave
+	autocmd!
+	au BufRead,BufNewFile * let b:start_time=localtime()
+	au CursorHold * call UpdateFile()
+	au BufWritePre * let b:start_time=localtime()
+augroup END
+
+" }}}
+
+" Highlight boundary{{{
+function! BoundaryAlert()
+	let l:halfRange=100
+	if col([line('.'),'$'])>&tw*0.9
+		setlocal cc=+1
+		hi ColorColumn ctermbg=darkred ctermfg=255-darkred guibg=darkred guifg=255-darkred
+	else
+		setlocal cc=
+		hi ColorColumn ctermbg=lightred ctermfg=black guibg=lightred guifg=black
+	endif	
+	if line('w$')-line('w0')<l:halfRange*2 	" check only when range is not
+											" rediculously large
+		if max(map(range(line('w0'),line('w$')),"col([v:val,'$'])"))>&tw
+			setlocal cc=+1
+		else
+			setlocal cc=
+		endif
+	endif
+endfunction
+
+set cc=+1
+
+augroup BoundaryBehavior
+	autocmd!
+	au CursorMoved,CursorMovedI,BufEnter * call BoundaryAlert()
+	au BufLeave * setlocal cc=
+augroup END
+" }}}
+
+" Default autowrapping behavior(disable auto-wrap) {{{
+set formatoptions=roq
+" }}}
 " }}}
 
 " Vundle, plugin manager{{{
@@ -205,6 +264,7 @@ function! LoadPluginScript()
 		vmap <expr> <UP> 	DVB_Drag('up')
 	endif
 	if exists("*DVB_Duplicate()")	
+		
 		vmap <expr> D 		DVB_Duplicate()
 	endif
 	" }}}
@@ -236,12 +296,11 @@ augroup END
 " }}}
 
 " Filetype specific(including plugin configure){{{
-
 " Makefile editing{{{
 nnoremap <leader>em :split ./makefile<CR>
 " }}}
 
-" Vimrc editing{{{
+" Vimrc editing{{{ 
 nnoremap <Leader>ev :vsplit $MYVIMRC<CR>
 nnoremap <Leader>sv :source $MYVIMRC<CR>
 
@@ -249,11 +308,12 @@ nnoremap <Leader>sv :source $MYVIMRC<CR>
 augroup filetype_vim
 	autocmd!
 	autocmd FileType vim setlocal foldmethod=marker
+	autocmd Filetype vim setlocal formatoptions=croqn 	" wrapping disbled for code
 augroup END
 " }}}
 " }}}
 
-" C++ specific{{{
+" C++ specific{{{ 
 augroup filetype_cpp
 	autocmd!
 	autocmd filetype cpp,c setlocal foldmethod=syntax
@@ -267,19 +327,28 @@ augroup filetype_cpp
 	autocmd filetype cpp,c let g:clang_complete_copen=1
 	autocmd filetype cpp,c let g:clang_hl_errors=1
 	autocmd filetype cpp,c let g:clang_close_preview=1
+	autocmd Filetype cpp,c setlocal tw=80 
+	autocmd Filetype cpp,c setlocal formatoptions=tcroqanj 
 augroup END
 " }}}
 
 " python specific {{{
+" Autowrapping behavior for py {{{
+" }}}
 augroup filetype_python
 	autocmd!
 	autocmd filetype python setlocal tabstop=4
 	autocmd filetype python setlocal sw=4
 	autocmd filetype python setlocal softtabstop=0
+	autocmd filetype python setlocal foldmethod=indent
+	autocmd filetype python setlocal formatoptions=croqanj
 augroup END
 " }}}
 
-" TexSuite{{{
+" Latex{{{
+" Autowrapping behavior for py {{{
+set formatoptions=tcroqanj 
+" }}}
 
  " IMPORTANT: grep will sometimes skip displaying the file name if you
  " search in a singe file. This will confuse Latex-Suite. Set your grep
@@ -314,4 +383,17 @@ augroup filetype_markdown
 augroup END
 " }}}
 
+"journal file definition{{{
+augroup filetype_journal_definition
+	autocmd!
+	autocmd BufRead,BufNewFile *.journal 	set filetype=journal
+	autocmd Filetype journal setlocal foldmethod=indent
+	autocmd Filetype journal setlocal syntax=tex
+	autocmd Filetype journal setlocal textwidth=80
+	autocmd Filetype journal setlocal spell
+	autocmd Filetype journal setlocal formatoptions=tcroqa2j
+augroup END	
+"}}}
+
 " }}}
+
