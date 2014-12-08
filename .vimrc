@@ -175,7 +175,7 @@ augroup END
 
 " Highlight boundary{{{
 function! BoundaryAlert()
-	let l:halfRange=100
+	let l:halfRange=500
 	if col([line('.'),'$'])>&tw*0.9
 		setlocal cc=+1
 		hi ColorColumn ctermbg=darkred ctermfg=255-darkred guibg=darkred guifg=255-darkred
@@ -205,6 +205,29 @@ augroup END
 " Default autowrapping behavior(disable auto-wrap) {{{
 set formatoptions=roq
 " }}}
+
+" Highlight cursor location
+hi CursorLine term=underline ctermbg=253 guibg=Grey40
+hi CursorColumn term=reverse ctermbg=7 guibg=Grey90
+
+nnoremap <leader>hl :call HLToggle()<CR>
+
+function! HLToggle()
+	if !exists("b:HLMarker")
+		let b:HLMarker=0
+	endif
+	if b:HLMarker==0
+		let b:HLMarker=1
+		setlocal cursorcolumn
+		setlocal cursorline
+	elseif b:HLMarker==1
+		let b:HLMarker=0
+		setlocal nocursorcolumn
+		setlocal nocursorline
+	endif
+endfunction
+
+"
 " }}}
 
 " Vundle, plugin manager{{{
@@ -328,7 +351,7 @@ augroup filetype_cpp
 	autocmd filetype cpp,c let g:clang_hl_errors=1
 	autocmd filetype cpp,c let g:clang_close_preview=1
 	autocmd Filetype cpp,c setlocal tw=80 
-	autocmd Filetype cpp,c setlocal formatoptions=tcroqanj 
+	autocmd Filetype cpp,c setlocal formatoptions=tcroqnj 
 augroup END
 " }}}
 
@@ -341,14 +364,13 @@ augroup filetype_python
 	autocmd filetype python setlocal sw=4
 	autocmd filetype python setlocal softtabstop=0
 	autocmd filetype python setlocal foldmethod=indent
-	autocmd filetype python setlocal formatoptions=croqanj
+	autocmd filetype python setlocal formatoptions=croqnj
+	autocmd filetype python setlocal noexpandtab
+augroup END
 augroup END
 " }}}
 
 " Latex{{{
-" Autowrapping behavior for py {{{
-set formatoptions=tcroqanj 
-" }}}
 
  " IMPORTANT: grep will sometimes skip displaying the file name if you
  " search in a singe file. This will confuse Latex-Suite. Set your grep
@@ -391,7 +413,7 @@ augroup filetype_journal_definition
 	autocmd Filetype journal setlocal syntax=tex
 	autocmd Filetype journal setlocal textwidth=80
 	autocmd Filetype journal setlocal spell
-	autocmd Filetype journal setlocal formatoptions=tcroqa2j
+	autocmd Filetype journal setlocal formatoptions=tcroq2j
 augroup END	
 "}}}
 
