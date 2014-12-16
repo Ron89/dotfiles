@@ -178,7 +178,7 @@ function! BoundaryAlert()
 	let l:halfRange=500
 	if col([line('.'),'$'])>&tw*0.9
 		setlocal cc=+1
-		hi ColorColumn ctermbg=darkred ctermfg=255-darkred guibg=darkred guifg=255-darkred
+		hi ColorColumn ctermbg=darkred ctermfg=255-darkred guibg=darkred guifg=white
 	else
 		setlocal cc=
 		hi ColorColumn ctermbg=lightred ctermfg=black guibg=lightred guifg=black
