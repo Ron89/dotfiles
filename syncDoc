@@ -1,0 +1,84 @@
+#!/bin/bash
+
+# READ ME BEFORE USE!
+# This is an script for on demand syncing written based on rsync. The target
+# folder for syncing is ${targetFolder}. To exclude any file/folder/wild card
+# from being synced, user can create a file ".rsync-filter" under
+# ${targetFolder}.  The backup will be created/updated on ${remoteFolder}. The
+# current snapshot will be stored in "${remoteFolder}/${targetFolder}". Outdated
+# files, be it due to deletion or renaming in ${targetFolder}, will be stored in
+# "${remoteFolder}/${backupHistory}/${backupTimeStamp}", where, by default,
+# ${backupTimeStamp} is a folder with a name determined by the date(and time, 
+# if needed.) when the current sync is performed.
+#
+# In short:
+# target folder:
+# 	${targetFolder}
+# backup is located at
+# 	${remoteFolder}
+# Storage structure of ${remoteFolder}:
+# 	Current snapshot: 		${remoteFolder}/${targetFolder}
+# 	Historical versions:	${remoteFolder}/${backupHistory}/$backupTimeStamp
+#
+# Remote folder can be on local drive, mobile media(external harddrive, etc. But
+# you will need to mount them first.), or on a remote computer connected through 
+# ssh protocal.
+#
+# IMPORTANT: UNCOMMENT TEST_FLAG BEFORE FIRST USE. TEST_FLAG is a flag for
+# dry-run. Since unexpected behavior may cause data corruption, it is important
+# to make sure that there is no unexpected behavior before the first run. Thus
+# uncomment it before the first run, examine the output. Comment it again only
+# when there is no unexpected output(errors, warnings, strange output, etc.).
+
+
+# ------------- storage structure definition, change it if you like.
+# please DO NOT use WHITE SPACE in the names provided below.
+targetFolder="$HOME/research_Documents" 	
+remoteFolder="chong@lab_computer.chong:~/research_Document_Backup" 
+backupTimeStamp=$(date +"%Y_%m_%d") 	
+#contentFolder="backupContent" 	
+backupHistory="~backup_History" 	
+
+#IMPORTANT
+TEST_FLAG=""
+#TEST_FLAG="--dry-run" 	#UNCOMMENT AND TEST BEFORE USE, OR IT MIGHT CAUSE DAMAGE
+
+
+#-----------------------------------------------------------------------
+# DON'T MESS WITH THE STUFF BELOW IF YOU DON'T KNOW WHAT YOU ARE DOING!!!
+
+# The following script to test if ${SYNC_PROGRAM} is sufficient in the system
+SYNC_PROGRAM="rsync"
+VER_MAIN_REQ=3
+VER_SUB_REQ=1
+command -v ${SYNC_PROGRAM} >/dev/null 2>&1 || \
+	{ echo >&2 "I require ${SYNC_PROGRAM} but it's not installed.  Aborting.";\
+		exit 1; }
+RSYNC_VERSION=`${SYNC_PROGRAM} --version | grep version | awk '{print $3}'`
+RSYNC_VER_MAIN=`echo $RSYNC_VERSION | cut -d '.' -f 1`
+RSYNC_VER_SUB=`echo $RSYNC_VERSION | cut -d '.' -f 2`
+VERSION_PASS=0
+
+if [ "$RSYNC_VER_MAIN" -gt ${VER_MAIN_REQ} ]; then
+	VERSION_PASS=1
+elif [ "$RSYNC_VER_MAIN" -eq ${VER_MAIN_REQ} ]; then
+	if [ "$RSYNC_VER_SUB" -ge ${VER_SUB_REQ} ]; then
+		VERSION_PASS=1	
+	fi
+fi
+
+if [ "${VERSION_PASS}" -eq 0 ]; then
+	echo >&2 "I require ${SYNC_PROGRAM} ${VER_MAIN_REQ}.${VER_SUB_REQ} or above. \
+Your current version is ${RSYNC_VERSION}, Aborting."; exit 1
+fi
+#------
+
+# Following defines sync behavior
+SYNC_ARG="${targetFolder} ${remoteFolder}"
+SYNC_ARG_OPT="-av --delete -FF --progress"
+SYNC_ARG_BACKUP="-b --backup-dir=${backupHistory}/${backupTimeStamp}"
+
+#------
+
+# Sync function
+${SYNC_PROGRAM} ${SYNC_ARG_OPT} ${SYNC_ARG_BACKUP} ${SYNC_ARG} ${TEST_FLAG}

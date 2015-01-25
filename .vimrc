@@ -16,14 +16,24 @@ let s:os=substitute(system('uname'),'\n','','')
 " Basic mapping{{{
 let mapleader=','
 let localmapleader='m'
+
+" browse mapping
 nnoremap H 0
 vnoremap H 0
 nnoremap L $
 vnoremap L $
+
+" Add line mapping
 nnoremap o o<esc>
 nnoremap O O<esc>
 nnoremap <CR> i<CR><esc>
+
+" Toggle on/off copymode
 nnoremap <Leader>cm :call ToggleCopyMode() <CR>
+
+" Command mode shortcuts
+" use <C-k> to truncate the commandline content to the end of the line.
+cnoremap <C-k> <C-\>estrpart(getcmdline(),0,getcmdpos()-1)<CR>
 " }}}
 
 " Mode switch{{{
@@ -176,7 +186,10 @@ augroup END
 " Highlight boundary{{{
 function! BoundaryAlert()
 	let l:halfRange=500
-	if col([line('.'),'$'])>&tw*0.9
+	if col([line('.'),'$'])>&tw*1.0
+		setlocal cc=+1
+		hi ColorColumn ctermbg=black ctermfg=white guibg=black guifg=white
+	elseif col([line('.'),'$'])>&tw*0.9
 		setlocal cc=+1
 		hi ColorColumn ctermbg=darkred ctermfg=255-darkred guibg=darkred guifg=white
 	else
@@ -418,4 +431,3 @@ augroup END
 "}}}
 
 " }}}
-
