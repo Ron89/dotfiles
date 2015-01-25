@@ -58,10 +58,10 @@ bind 'C-i:menu-complete' 			# C-i is how Tab passes to shell. Menu-complete is b
 
 # save and reload history after each command(first remove early history configs)
 PROMPT_COMMAND=`echo $PROMPT_COMMAND | sed 's:history -[a-z];[ ]*::g'`
-if [ "$PROMPT_COMMAND" != "" ]; then
+if [ "`echo $PROMPT_COMMAND | awk '{print substr($0,0,1)}'`" != ";" ]; then
 	export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 else
-	export PROMPT_COMMAND="history -a; history -c; history -r"
+	export PROMPT_COMMAND="history -a; history -c; history -r $PROMPT_COMMAND"
 fi
 # sort out environment variables, remove replicated item in them
 PATH=`awk -F: '{for (i=1;i<=NF;i++) { if ( !x[$i]++ ) printf("%s:",$i); }}' <<< $PATH`
