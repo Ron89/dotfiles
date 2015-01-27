@@ -48,6 +48,7 @@ inoremap jk <esc>
  inoremap <> <><++><esc>F>i
  inoremap '' ''<++><esc>F'i
  inoremap "" ""<++><esc>F"i
+ inoremap $$ $$<++><esc>F$i
 " }}}
 
 " Omnicomplete{{{
@@ -266,6 +267,7 @@ endif
  Bundle 'shinokada/dragvisuals.vim'
  Bundle 'ron89/vim-copymode'
  Bundle 'vim-scripts/gnuplot.vim'
+ Bundle 'vim-scripts/taglist.vim'
 
 " }}}
  
@@ -292,6 +294,7 @@ function! LoadPluginScript()
 		inoremap <silent> <Bar>   <Bar><Esc>:call g:CucumberTable()<CR>a
 	endif
 	" }}}
+	
 	" dragvisuals -- drag visual block{{{
 	if exists("*DVB_Drag()")	
 		vmap <expr> <LEFT> 	DVB_Drag('left')
@@ -304,6 +307,11 @@ function! LoadPluginScript()
 		vmap <expr> D 		DVB_Duplicate()
 	endif
 	" }}}
+	
+	" Taglist{{{
+	if exists(":TlistToggle")
+		nnoremap <Leader>tl :TlistToggle<CR>
+	"}}}
 endfunction
 
 " CucumberTable automatically align table separators of
