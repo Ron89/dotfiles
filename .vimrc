@@ -311,6 +311,7 @@ function! LoadPluginScript()
 	" Taglist{{{
 	if exists(":TlistToggle")
 		nnoremap <Leader>tl :TlistToggle<CR>
+	endif
 	"}}}
 endfunction
 
