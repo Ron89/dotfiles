@@ -268,6 +268,7 @@ endif
  Bundle 'ron89/vim-copymode'
  Bundle 'vim-scripts/gnuplot.vim'
  Bundle 'vim-scripts/taglist.vim'
+ Bundle 'vim-scripts/winmanager'
 
 " }}}
  
@@ -311,8 +312,26 @@ function! LoadPluginScript()
 	" Taglist{{{
 	if exists(":TlistToggle")
 		nnoremap <Leader>tl :TlistToggle<CR>
+		let g:Tlist_WinWidth = 40
+		let g:tlist_cpp_settings = 'c++;d:macro;c:classes;m:class members;'. 
+					\'f:functions;v:variables;l:local variables'
+		let g:tlist_python_settings = 'python;i:imports;c:classes;'. 
+					\'m:class members;f:functions;v:variables'
+		let g:tlist_tex_settings = 'tex;c:chapters;s:sections;'. 
+					\'u:subsections;b:subsubsections'
+		let g:Tlist_GainFocus_On_ToggleOpen = 1
+		if exists(":WMToggle")
+			let g:winManagerWindowLayout = 'FileExplorer|TagList'
+		endif
 	endif
 	"}}}
+	
+	" Winmanager {{{
+	if exists(":WMToggle")
+		nnoremap <Leader>wm :WMToggle<CR>
+		let g:winManagerWidth=40
+	endif
+	" }}}
 endfunction
 
 " CucumberTable automatically align table separators of
