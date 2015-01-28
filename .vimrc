@@ -161,25 +161,42 @@ set tabstop=4
 " Autosaving{{{
 "
 " only write if needed and update the start time after the save
-set updatetime=1000 	" very frequent update time ensure that CursorHold event triggers.
-function! UpdateFile() 	" auto-update routine
+"set updatetime=1000 	" very frequent update time ensure that CursorHold event triggers.
+"function! UpdateFile() 	" auto-update routine
+"	if (&mod==1)
+"		if (@%=="") 
+"			echom 'Just for the heads up. You haven't name name file yet!'
+"		else
+"			if ((localtime() - b:start_time) >= 60)
+"				update
+"				let b:start_time=localtime()
+"			endif
+"		endif
+"	endif
+"endfunction
+"
+"augroup AutoSave
+"	autocmd!
+"	au BufRead,BufNewFile * let b:start_time=localtime()
+"	au CursorHold * call UpdateFile()
+"	au BufWritePre * let b:start_time=localtime()
+"augroup END
+
+function RetainChangeConfirm()
 	if (&mod==1)
-		if (@%=="") 
-			echom "Just for the heads up. You haven't name name file yet!"
-		else
-			if ((localtime() - b:start_time) >= 60)
-				update
-				let b:start_time=localtime()
-			endif
+		let l:choice=confirm("Buffer change not saved, and about to leave.", 
+					\"&Save\nSave with &trailed name(.tmp)\n&Leave it be")
+		if l:choice==1
+			write
+		elseif l:choice==2
+			write expand("%:p:h")."/".expand("%:t")."tmp"
 		endif
 	endif
 endfunction
 
-augroup AutoSave
+augroup DeleteBufPrompt
 	autocmd!
-	au BufRead,BufNewFile * let b:start_time=localtime()
-	au CursorHold * call UpdateFile()
-	au BufWritePre * let b:start_time=localtime()
+	au BufDelete,BufFilePre * call RetainChangeConfirm()
 augroup END
 
 " }}}
