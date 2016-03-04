@@ -1,0 +1,5 @@
+[Match]
+Name=enp3s0f1
+
+[Network]
+DHCP=ipv4

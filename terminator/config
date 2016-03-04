@@ -1,0 +1,97 @@
+[global_config]
+  always_split_with_profile = True
+  enabled_plugins = LaunchpadCodeURLHandler, APTURLHandler, LaunchpadBugURLHandler
+  focus = system
+  title_inactive_bg_color = "#657b83"
+  title_transmit_bg_color = "#5b5858"
+[keybindings]
+  edit_window_title = <Shift><Alt>t
+  go_down = <Alt>j
+  go_left = <Alt>h
+  go_right = <Alt>l
+  go_up = <Alt>k
+  layout_launcher = <Primary><Shift><Alt>l
+  move_tab_left = None
+  move_tab_right = None
+  new_tab = <Alt>t
+  new_window = <Alt>n
+  next_tab = <Shift><Alt>l
+  prev_tab = <Shift><Alt>h
+  resize_down = <Primary><Shift>j
+  resize_left = <Primary><Shift>h
+  resize_right = <Primary><Shift>l
+  resize_up = <Primary><Shift>k
+  split_horiz = <Alt>b
+  split_vert = <Alt>v
+[layouts]
+  [[default]]
+    [[[child1]]]
+      parent = window0
+      profile = default
+      type = Terminal
+    [[[window0]]]
+      parent = ""
+      size = 860, 1020
+      type = Window
+[plugins]
+[profiles]
+  [[default]]
+    background_color = "#1b1b1b"
+    background_darkness = 0.9
+    background_image = None
+    cursor_blink = False
+    font = DejaVu Sans Mono 11
+    foreground_color = "#cfcfcf"
+    palette = "#1b1b1b:#e82c22:#99bf39:#f7ca87:#2698c2:#d93ac8:#30c1ab:#cfcfcf:#353535:#e86e68:#c4db6d:#ffe5bd:#66c2e3:#e1a8d3:#87e1d3:#f7f7f7"
+    scrollbar_position = hidden
+    show_titlebar = False
+    use_system_font = False
+  [[Base16 harmonic16 Dark]]
+    background_color = "#3f3f3f"
+    background_image = None
+    copy_on_selection = True
+    cursor_color = "#dcdcdc"
+    font = DejaVu Sans Mono 11
+    foreground_color = "#dcdcdc"
+    palette = "#3f3f3f:#cc9393:#7f9f7f:#e3ceab:#ec6c11:#db2424:#8cd0d3:#dcdccc:#3f3f3f:#cc9393:#7f9f7f:#e3ceab:#f59615:#ee2a2a:#8cd0d3:#dcdccc"
+    scrollbar_position = hidden
+    show_titlebar = False
+  [[Saturn]]
+    background_color = "#363434"
+    background_darkness = 0.9
+    background_image = None
+    cursor_color = "#9795da"
+    font = DejaVu Sans Mono 11
+    foreground_color = "#dcdcdc"
+    palette = "#232323:#ff955e:#6dd76d:#f3ddb6:#eb6bf5:#ff89b0:#50e0e2:#dededa:#4a4a4a:#ffb489:#9cff9c:#f3ddb6:#ff8be9:#ffadd6:#50e0e2:#f4f4e3"
+    scrollbar_position = hidden
+    show_titlebar = False
+  [[Solarized Dark]]
+    allow_bold = False
+    background_color = "#002b36"
+    background_image = None
+    copy_on_selection = True
+    cursor_color = "#eee8d5"
+    font = DejaVu Sans Mono 11
+    foreground_color = "#eee8d5"
+    palette = "#073642:#d30102:#859900:#b58900:#6c71c4:#d33682:#2aa198:#839496:#586e75:#cb4b16:#859900:#b58900:#268bd2:#d33682:#2aa198:#93a1a1"
+    scrollbar_position = hidden
+    show_titlebar = False
+  [[Solarized Light]]
+    background_color = "#eee8d5"
+    background_image = None
+    copy_on_selection = True
+    cursor_color = "#eee8d5"
+    font = DejaVu Sans Mono 10
+    foreground_color = "#002b36"
+    palette = "#073642:#dc322f:#859900:#b58900:#268bd2:#d33682:#2aa198:#eee8d5:#002b36:#cb4b16:#586e75:#657b83:#839496:#6c71c4:#93a1a1:#fdf6e3"
+    scrollbar_position = hidden
+  [[Tango]]
+    background_color = "#1b1b1b"
+    background_darkness = 0.9
+    background_image = None
+    font = DejaVu Sans Mono 11
+    foreground_color = "#cfcfcf"
+    palette = "#1b1b1b:#ab4642:#a0b56c:#f7ca87:#7cafc2:#ba8baf:#86c1b8:#cfcfcf:#404040:#e85f59:#cde88b:#ffe5bd:#91cde3:#e1a8d3:#9ce1d6:#f7f7f7"
+    scrollbar_position = hidden
+    show_titlebar = False
