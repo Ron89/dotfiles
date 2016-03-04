@@ -355,36 +355,26 @@ endfunction
  Plug 'tpope/vim-surround'
  Plug 'nathanaelkane/vim-indent-guides'
 " Auto-complete tool set
-" Plug 'Shougo/deoplete.nvim'
-" Plug 'Shougo/neco-syntax'
-" Plug 'Shougo/neco-vim'
-" Plug 'Shougo/neosnippet-snippets'
 " General tools
  Plug 'Shougo/unite-session'
  Plug 'godlygeek/tabular'
  Plug 'dhruvasagar/vim-table-mode'
-" Plug 'reedes/vim-pencil'
  Plug 'mbbill/undotree'
  Plug 'vim-airline/vim-airline'
  Plug 'vim-airline/vim-airline-themes'
 if version>=703 || (version>7.3 && version<10.0)
-"	Plug 'Rip-Rip/clang_complete'
 	Plug 'justmao945/vim-clang'
 	Plug 'davidhalter/jedi-vim'
-"	Plug 'Valloric/YouCompleteMe'
 " syntax checking
 	Plug 'scrooloose/syntastic'
 	Plug 'chazy/cscope_maps'
 endif
 if exists(":tnoremap")
-"   Plug 'jalvesaq/vimcmdline'
     Plug 'benekastah/neomake'
     Plug 'bfredl/nvim-ipy'
 endif
  Plug 'ervandew/supertab'
  Plug 'plasticboy/vim-markdown'
-" Plug 'powerline/powerline', {'rtp': 'powerline/bindings/vim/'}
-" Plug 'vitorgalvao/autoswap_mac'
  Plug 'shinokada/dragvisuals.vim'
  Plug 'ron89/vim-copymode'
  Plug 'vim-scripts/gnuplot.vim'
@@ -394,15 +384,12 @@ endif
  Plug 'vim-scripts/winmanager'
 " thesaurus plugin
 " Plug 'beloglazov/vim-online-thesaurus'
-" Plug 'ron89/thesaurus_query.vim'
-" Plug 'reedes/vim-lexical'
+ Plug 'ron89/thesaurus_query.vim'
 " Utilities
  Plug 'itchyny/calendar.vim'
 " VOoM and organizer
  Plug 'vim-voom/VOoM'
-" Plug 'hsitz/vimOrganizer'
 " vim wiki
-" Plug 'vimwiki/vimwiki'
 " org-mode
  Plug 'tpope/vim-speeddating'
  Plug 'vim-scripts/SyntaxRange'
