@@ -2,7 +2,7 @@
 
 " General{{{
  set nocompatible               " be iMproved
- set shell=/bin/sh 				" avoid complications in shell commands
+ set shell=/bin/sh                 " avoid complications in shell commands
 " set encoding=iso-8859-1        " show accented letter
 
 " detect OS type
@@ -13,9 +13,21 @@ let s:os=substitute(system('uname'),'\n','','')
  filetype plugin on
  filetype indent on
 
+" " Unicode {{{
+" if has("multi_byte")
+"   if &termencoding == ""
+"     let &termencoding = &encoding
+"   endif
+"   set encoding=utf-8
+"   setglobal fileencoding=utf-8
+"   "setglobal bomb
+"   set fileencodings=ucs-bom,utf-8,latin1
+" endif
+" " }}}
+
 " Basic mapping{{{
 let mapleader=','
-let maplocalleader='m'
+" let maplocalleader='m'
 
 " browse mapping
 nnoremap H 0
@@ -68,17 +80,17 @@ inoremap jk <esc>
 " In coding, when typing enter in {}, insert 2 line breakers and put cursor in
 " the empty line.
 function! EnterBetweenBraces()
- 	let l:string=getline('.')[col('.')-1:col('.')]
- 	let l:append=getline('.')[col('.'):]
- 	if l:string=='{}'
- 		call setline('.',getline('.')[:col('.')-1])
- 		call append('.',[repeat('	',indent('.')/&tabstop+1),repeat('	',indent('.')/&tabstop).l:append])
- 		call cursor(line('.')+1,indent('.')/&tabstop+&tabstop)
- 	else
- 		call setline('.',getline('.')[:col('.')-1])
- 		call append('.',repeat('	',indent('.')/&tabstop).l:append)
- 		call cursor(line('.')+1,indent('.')/&tabstop+&tabstop)
- 	endif
+     let l:string=getline('.')[col('.')-1:col('.')]
+     let l:append=getline('.')[col('.'):]
+     if l:string=='{}'
+         call setline('.',getline('.')[:col('.')-1])
+         call append('.',[repeat('    ',indent('.')/&tabstop+1),repeat('    ',indent('.')/&tabstop).l:append])
+         call cursor(line('.')+1,indent('.')/&tabstop+&tabstop)
+     else
+         call setline('.',getline('.')[:col('.')-1])
+         call append('.',repeat('    ',indent('.')/&tabstop).l:append)
+         call cursor(line('.')+1,indent('.')/&tabstop+&tabstop)
+     endif
 endfunction
 
 " }}}
@@ -90,18 +102,22 @@ endfunction
 " Editing environment{{{
 " mouse
 if has("mouse")
-	set mouse=n
+    set mouse=n
 endif
 
 " clipboard
 if has('clipboard')
-	set clipboard=unnamed,unnamedplus
+    set clipboard=unnamed,unnamedplus
+endif
+
+if has("conceallevel")
+    set conceallevel=2
 endif
 
 " " color personalization
 "  highlight Visual ctermbg=144 ctermfg=235
 " " highlight Visual cterm=reverse
-"  highlight MatchParen ctermbg=115 
+"  highlight MatchParen ctermbg=115
 "  highlight PreProc ctermfg=4
 " " highlight Comment ctermfg=4
 "  highlight User1 ctermbg=16 ctermfg=130 cterm=bold
@@ -130,53 +146,53 @@ endif
 " set rulerformat=%35(%f\ %c%V-%l/%L\ %p%%%)
  set laststatus=2
  set backspace=indent,eol,start
- 
+
 
 " tabline
 function! MyTabLabel(n)
-	let buflist = tabpagebuflist(a:n)
-	let winnr = tabpagewinnr(a:n)
-	" define max length of tablabel based on the number of tabs
-	let numtabs = tabpagenr('$')
-	" account for space padding between tabs, and the close button
-	let maxlen = ( &columns - ( numtabs * 2 ) - 4 ) / numtabs
+    let buflist = tabpagebuflist(a:n)
+    let winnr = tabpagewinnr(a:n)
+    " define max length of tablabel based on the number of tabs
+    let numtabs = tabpagenr('$')
+    " account for space padding between tabs, and the close button
+    let maxlen = ( &columns - ( numtabs * 2 ) - 4 ) / numtabs
 
-	let tablabel = bufname(buflist[winnr - 1])
-	while strlen( tablabel ) < 4
-		let tablabel = tablabel . " "
-	endwhile
-	" modify filename
-	let tablabel = fnamemodify( tablabel, ':~:.' )
-	let tablabel = strpart( tablabel, 0, maxlen )
-	return tablabel
+    let tablabel = bufname(buflist[winnr - 1])
+    while strlen( tablabel ) < 4
+        let tablabel = tablabel . " "
+    endwhile
+    " modify filename
+    let tablabel = fnamemodify( tablabel, ':~:.' )
+    let tablabel = strpart( tablabel, 0, maxlen )
+    return tablabel
 endfunction
 
 function! MyTabLine()
-	let s = ''
-	for i in range(tabpagenr('$'))
-		" select the highlighting
-		if i + 1 == tabpagenr()
-			let s .= '%#TabLineSel#'
-		else
-			let s .= '%#TabLine#'
-		endif
+    let s = ''
+    for i in range(tabpagenr('$'))
+        " select the highlighting
+        if i + 1 == tabpagenr()
+            let s .= '%#TabLineSel#'
+        else
+            let s .= '%#TabLine#'
+        endif
 
-		" set the tab page number (for mouse clicks)
-		let s .= '%' . (i + 1) . 'T'
+        " set the tab page number (for mouse clicks)
+        let s .= '%' . (i + 1) . 'T'
 
-		" the label is made by MyTabLabel()
-		let s .= ' %{MyTabLabel(' . (i + 1) . ')} '
-	endfor
+        " the label is made by MyTabLabel()
+        let s .= ' %{MyTabLabel(' . (i + 1) . ')} '
+    endfor
 
-	" after the last tab fill with TabLineFill and reset tab page nr
-	let s .= '%#TabLineFill#%T'
+    " after the last tab fill with TabLineFill and reset tab page nr
+    let s .= '%#TabLineFill#%T'
 
-	" right-align the label to close the current tab page
-	if tabpagenr('$') > 1
-		let s .= '%=%#TabLine#%999XX'
-	endif
+    " right-align the label to close the current tab page
+    if tabpagenr('$') > 1
+        let s .= '%=%#TabLine#%999XX'
+    endif
 
-	return s
+    return s
 endfunction
 
 set tabline=%!MyTabLine()
@@ -184,20 +200,20 @@ set tabline=%!MyTabLine()
 
 " number/relative number
 if (version == 7.4)+(version==704)
-	set number
-	augroup buffer_switch
-		autocmd!
-		autocmd BufEnter * setlocal relativenumber
-		autocmd BufLeave * setlocal norelativenumber
-	augroup END
+    set number
+    augroup buffer_switch
+        autocmd!
+        autocmd BufEnter * setlocal relativenumber
+        autocmd BufLeave * setlocal norelativenumber
+    augroup END
 elseif (version == 7.3)+(version==703)
-	augroup buffer_switch
-		autocmd!
-		autocmd BufEnter * setlocal relativenumber
-		autocmd BufLeave * setlocal number
-	augroup END
+    augroup buffer_switch
+        autocmd!
+        autocmd BufEnter * setlocal relativenumber
+        autocmd BufLeave * setlocal number
+    augroup END
 else
-	set number
+    set number
 endif
 
 "set spell
@@ -223,77 +239,77 @@ set tabstop=4
 " Autosaving{{{
 "
 " only write if needed and update the start time after the save
-"set updatetime=1000 	" very frequent update time ensure that CursorHold event triggers.
-"function! UpdateFile() 	" auto-update routine
-"	if (&mod==1)
-"		if (@%=="") 
-"			echom 'Just for the heads up. You haven't name name file yet!'
-"		else
-"			if ((localtime() - b:start_time) >= 60)
-"				update
-"				let b:start_time=localtime()
-"			endif
-"		endif
-"	endif
+"set updatetime=1000     " very frequent update time ensure that CursorHold event triggers.
+"function! UpdateFile()     " auto-update routine
+"    if (&mod==1)
+"        if (@%=="")
+"            echom 'Just for the heads up. You haven't name name file yet!'
+"        else
+"            if ((localtime() - b:start_time) >= 60)
+"                update
+"                let b:start_time=localtime()
+"            endif
+"        endif
+"    endif
 "endfunction
 "
 "augroup AutoSave
-"	autocmd!
-"	au BufRead,BufNewFile * let b:start_time=localtime()
-"	au CursorHold * call UpdateFile()
-"	au BufWritePre * let b:start_time=localtime()
+"    autocmd!
+"    au BufRead,BufNewFile * let b:start_time=localtime()
+"    au CursorHold * call UpdateFile()
+"    au BufWritePre * let b:start_time=localtime()
 "augroup END
 
 "function !RetainChangeConfirm()
-"	if (&mod==1)
-"		let l:choice=confirm("Buffer change not saved, and about to leave.", 
-"					\"&Save\nSave with &trailed name(.tmp)\n&Leave it be")
-"		if l:choice==1
-"			write
-"		elseif l:choice==2
-"			write expand("%:p:h")."/".expand("%:t")."tmp"
-"		endif
-"	endif
+"    if (&mod==1)
+"        let l:choice=confirm("Buffer change not saved, and about to leave.",
+"                    \"&Save\nSave with &trailed name(.tmp)\n&Leave it be")
+"        if l:choice==1
+"            write
+"        elseif l:choice==2
+"            write expand("%:p:h")."/".expand("%:t")."tmp"
+"        endif
+"    endif
 "endfunction
 "
 "augroup DeleteBufPrompt
-"	autocmd!
-"	au BufDelete,BufFilePre * call RetainChangeConfirm()
+"    autocmd!
+"    au BufDelete,BufFilePre * call RetainChangeConfirm()
 "augroup END
 
 " }}}
 
-" Highlight boundary{{{
-highlight ColorColumn ctermbg=246
-function! BoundaryAlert()
-	let l:halfRange=500
-	if col([line('.'),'$'])>&tw*0.9
-		setlocal cc=+1
-	else
-		setlocal cc=
-	endif	
-	if line('w$')-line('w0')<l:halfRange*2 	" check only when range is not
-											" rediculously large
-		if max(map(range(line('w0'),line('w$')),"col([v:val,'$'])"))>&tw
-			setlocal cc=+1
-		else
-			setlocal cc=
-		endif
-	endif
-endfunction
-
-set cc=+1
-
-augroup BoundaryBehavior
-	autocmd!
-	au CursorMoved,CursorMovedI,BufEnter * call BoundaryAlert()
-	au BufLeave * setlocal cc=
-augroup END
-" }}}
+"" Highlight boundary{{{
+"highlight ColorColumn ctermbg=246
+"function! BoundaryAlert()
+"    let l:halfRange=500
+"    if col([line('.'),'$'])>&tw*0.9
+"        setlocal cc=+1
+"    else
+"        setlocal cc=
+"    endif
+"    if line('w$')-line('w0')<l:halfRange*2     " check only when range is not
+"                                            " rediculously large
+"        if max(map(range(line('w0'),line('w$')),"col([v:val,'$'])"))>&tw
+"            setlocal cc=+1
+"        else
+"            setlocal cc=
+"        endif
+"    endif
+"endfunction
+"
+"set cc=+1
+"
+"augroup BoundaryBehavior
+"    autocmd!
+"    au CursorMoved,CursorMovedI,BufEnter * call BoundaryAlert()
+"    au BufLeave * setlocal cc=
+"augroup END
+"" }}}
 
 "" Customized Syntax Highlighting {{{
-" syntax region DoubleQuote start="``" end="''"
-" highlight link DoubleQuote String
+ syntax region DoubleQuote start="``" end="''" keepend
+ highlight link DoubleQuote String
 "" }}}
 
 " Default autowrapping behavior(disable auto-wrap) {{{
@@ -307,18 +323,18 @@ hi CursorColumn term=reverse ctermbg=7 guibg=Grey90 ctermfg=235 guifg=Grey5
 nnoremap <leader>hl :call HLToggle()<CR>
 
 function! HLToggle()
-	if !exists("b:HLMarker")
-		let b:HLMarker=0
-	endif
-	if b:HLMarker==0
-		let b:HLMarker=1
-		setlocal cursorcolumn
-		setlocal cursorline
-	elseif b:HLMarker==1
-		let b:HLMarker=0
-		setlocal nocursorcolumn
-		setlocal nocursorline
-	endif
+    if !exists("b:HLMarker")
+        let b:HLMarker=0
+    endif
+    if b:HLMarker==0
+        let b:HLMarker=1
+        setlocal cursorcolumn
+        setlocal cursorline
+    elseif b:HLMarker==1
+        let b:HLMarker=0
+        setlocal nocursorcolumn
+        setlocal nocursorline
+    endif
 endfunction
 " }}}
 
@@ -350,62 +366,89 @@ endfunction
 
  " Plug for other add-ons
  Plug 'gerw/vim-latex-suite'
+ Plug 'xuhdev/vim-latex-live-preview'
+" Plug 'houtsnip/vim-emacscommandline'
  Plug 'scrooloose/nerdtree'
- Plug 'Shougo/unite.vim'
+" Plug 'Shougo/unite.vim'
+ " Session Saving
+ Plug 'xolox/vim-session'
+ Plug 'xolox/vim-misc'
  Plug 'tpope/vim-surround'
  Plug 'nathanaelkane/vim-indent-guides'
+" Git related
+ Plug 'airblade/vim-gitgutter'
+" Encryption
+ Plug 'jamessan/vim-gnupg'
 " Auto-complete tool set
 " General tools
- Plug 'Shougo/unite-session'
+" Plug 'Shougo/unite-session'
  Plug 'godlygeek/tabular'
  Plug 'dhruvasagar/vim-table-mode'
  Plug 'mbbill/undotree'
  Plug 'vim-airline/vim-airline'
  Plug 'vim-airline/vim-airline-themes'
 if version>=703 || (version>7.3 && version<10.0)
-	Plug 'justmao945/vim-clang'
-	Plug 'davidhalter/jedi-vim'
+    Plug 'justmao945/vim-clang'
+    Plug 'davidhalter/jedi-vim'
 " syntax checking
-	Plug 'scrooloose/syntastic'
-	Plug 'chazy/cscope_maps'
+    Plug 'scrooloose/syntastic'
+    Plug 'chazy/cscope_maps'
+    Plug 'reedes/vim-pencil'  " autowrap
 endif
 if exists(":tnoremap")
-    Plug 'benekastah/neomake'
+"   Plug 'benekastah/neomake'
     Plug 'bfredl/nvim-ipy'
+    Plug 'kassio/neoterm'
+    Plug 'Shougo/deoplete.nvim'
 endif
  Plug 'ervandew/supertab'
- Plug 'plasticboy/vim-markdown'
+" Plug 'plasticboy/vim-markdown'
+ Plug 'tpope/vim-markdown'
+ Plug 'Ron89/md_insert_equation.vim'
  Plug 'shinokada/dragvisuals.vim'
- Plug 'ron89/vim-copymode'
+" Plug 'ron89/vim-copymode'
  Plug 'vim-scripts/gnuplot.vim'
 " window manager
  Plug 'vim-scripts/taglist.vim'
  Plug 'majutsushi/tagbar'
  Plug 'vim-scripts/winmanager'
-" thesaurus plugin
+ Plug 'szw/vim-maximizer'
+" Language plugin
 " Plug 'beloglazov/vim-online-thesaurus'
+ Plug 'ron89/vimdictive'
  Plug 'ron89/thesaurus_query.vim'
+" Plug 'szw/vim-dict'
+ Plug 'rhysd/vim-grammarous'
 " Utilities
+" Plug 'itchyny/dictionary.vim'
  Plug 'itchyny/calendar.vim'
+" Plug 'mattn/calendar-vim'
 " VOoM and organizer
  Plug 'vim-voom/VOoM'
+ Plug 'tpope/vim-fugitive'
+ Plug 'mileszs/ack.vim'
 " vim wiki
 " org-mode
  Plug 'tpope/vim-speeddating'
  Plug 'vim-scripts/SyntaxRange'
- Plug 'jceb/vim-orgmode'
+ Plug 'ron89/vim-orgmode'
  Plug 'vim-scripts/utl.vim'
 " Color scheme
+" Plug 'flazz/vim-colorschemes'
  Plug 'reedes/vim-colors-pencil'
  Plug 'altercation/vim-colors-solarized'
+ Plug 'romainl/Apprentice'
+ Plug 'tpope/vim-vividchalk'
+ Plug 'morhetz/gruvbox'
+" Plug 'itchyny/lightline.vim'
 " call neobundle#end()
  call plug#end()
 " call vundle#end()
 
 " }}}
- 
+
 " configure for convenient vim plugins{{{
- 
+
 " variable initialization {{{
 " dragvisuals -- drag visual block
 let g:DVB_TrimWS = 1
@@ -423,40 +466,46 @@ let g:DVB_TrimWS = 1
 " let g:ycm_global_ycm_extra_conf='~/.config/YouCompleteMe/.ycm_extra_conf.py'
 
 " vim-latex configuration
- let g:Tex_ViewRule_pdf='okular'
+ let g:Tex_ViewRule_pdf='evince'
  let g:Tex_ViewRule_dvi='xdvi -s 5 -keep -hush -editor "vim --servername vimlatex --remote +\%l \%f"'
  let g:Tex_ViewRule_pdf='zathura -x "vim --servername vimlatex --remote +\%{line} \%{input}"'
  let g:Tex_CompileRule_dvi='latex -interaction=nonstopmode -src-specials $*'
  let g:Tex_CompileRule_pdf='pdflatex -synctex=1 -interaction=nonstopmode -src-specials $*'
 
-" online thesaurus
-" nnoremap <leader>cs :OnlineThesaurusCurrentWord<CR><C-w>k
-
 " Color scheme
-" colors mayansmoke
-" let g:pencil_higher_contrast_ui = 0
-" let g:pencil_neutral_code_bg = 1
- let base16colorspace=256
-" colors mayansmoke 
-" set background=dark
- set background=light
- let g:pencil_terminal_italics = 1
-" let g:airline_theme = 'pencil'
- let g:airline_theme = 'solarized'
+ set background=dark
+" let g:airline_theme = 'gruvbox'
 " colors pencil
- colors solarized
+ colors gruvbox
 
 " airline config
  let g:airline_powerline_fonts = 1
+"  let g:airline#extensions#tabline#enabled = 1
+"  let g:airline#extensions#tabline#left_sep = ' '
+"  let g:airline#extensions#tabline#left_alt_sep = '|'
+" color solarized
 
-" thesaurus_query options
+" Ack/silver_search {{{
+ let g:ackprg = 'ag --nogroup --nocolor --column'
+" }}}
+
+" thesaurus_query options {{{
 " let g:thesaurus_query#display_list_all_time = 1
- source ~/.vim/thesaurus_query.vim/plugin/thesaurus_query.vim
+" let g:thesaurus_query#use_local_thesaurus_source_as_primary = 0
+ let g:thesaurus_query#enabled_backends=["thesaurus_com","datamuse_com","mthesaur_txt"]
+" source ~/.vim/thesaurus_query.vim/plugin/thesaurus_query.vim
+" }}}
 
-" Indent guide
+" vim-session{{{
+ let g:session_autosave = 'no'
+ let g:session_autoload = 'no'
+" }}}
+
+" Indent guide {{{
 " let g:indent_guides_auto_colors = 0
 " hi IndentGuidesOdd  ctermbg=lightgrey
 " hi IndentGuidesEven ctermbg=grey
+" }}}
 
 " syntastics {{{
 set statusline+=%#warningmsg#
@@ -515,95 +564,144 @@ let cmdline_follow_colorscheme = 1
 " let g:lexical#dictionary = ['/usr/share/dict/american-english','/usr/share/dict/british','/usr/share/dict/british-english']
 " " let g:lexical#spellfile = ['~/.vim/spell/en.utf-8.add',]
 
+" vim latex live preview {{{
+ let g:livepreview_previewer = 'evince'
+ set updatetime=8000
+" }}}
+
 " pencil mode {{{
  let g:pencil#wrapModeDefault = 'hard'
+ let g:pencil#textwidth = 80
+ let g:pencil#conceallevel = 2
 " }}}
 
 " org-mode {{{
  let g:org_indent = 0
- let g:org_todo_keywords = [['TODO', 'WAITING', '|', 'DONE'],
+ let g:org_todo_keywords = [['TODO', 'WAITING', 'STALLED', '|', 'DONE'],
    \   ['|', 'CANCELED']]
- let g:org_todo_keyword_faces = [['WAITING', 'cyan'], ['CANCELED',
-   \   [':foreground red', ':background black', ':weight bold',
+ let g:org_todo_keyword_faces = [['WAITING', 'cyan'], ['STALLED', 'yellow'],
+   \   ['CANCELED', [':foreground red', ':background black', ':weight bold',
    \   ':slant italic', ':decoration underline']]]
+ let g:org_prefer_insert_mode = 0
 "}}}
 
+" Calendar {{{
+ let g:calendar_google_calendar = 1
+ let g:calendar_google_task = 1
 " }}}
 
+" language-tool {{{
+let g:languagetool_jar='$HOME/Softwares/LanguageTool-3.2/languagetool-commandline.jar'
+" }}}
+
+" neo-make setup {{{
+"  augroup NeoMake
+"   autocmd!
+"   autocmd! BufWritePost * Neomake
+"  augroup END
+"  let g:neomake_python_enabled_makers = ['pylint2']
+"  let g:neomake_verbose = 0
+" 
+" " }}}
+
+" utl {{{
+ let g:utl_cfg_hdl_mt_generic = "silent !xdg-open '%p' &"
+ let g:utl_cfg_hdl_scm_http = "silent !firefox '%u#%f' &"
+ let g:utl_cfg_hdl_scm_mailto = "silent !terminator -e mutt '%u' &" 
+ let g:utl_cfg_hdl_scm_generic = "silent !xdg-open '%p' &"
+ let g:utl_cfg_hdl_scm_directory = "silent !nautilus '%p' &"
+ let g:utl_cfg_hdl_mt_text_directory = "silent !terminator --working-directory '%p' &"
+ let g:utl_cfg_hdl_mt_text_directory__vim = "NERDTree '%p'"
+" let g:utl_cfg_hdl_mt_http = "silent !firefox '%u#%f' &"
+" let g:utl_cfg_hdl_mt_directory = "silent !xdg-open '%p' &"
+" }}}
+
+" " powerline {{{
+" set rtp+=/usr/lib/python2.7/site-packages/powerline/bindings/vim/
+" 
+" " Always show statusline
+" set laststatus=2
+" 
+" " Use 256 colours (Use this setting only if your terminal supports 256 colours)
+" set t_Co=256
+" " }}}
+
+" }}}
+"
 " function initialization {{{
 function! LoadPluginScript()
-	" Tabular{{{
-	if exists(":Tabularize")
-		vnoremap <Leader>t& :Tabularize/&<CR>
-		nnoremap <Leader>t& :Tabularize/&<CR>
-		vnoremap <Leader>t, :Tabularize/,<CR>
-		nnoremap <Leader>t, :Tabularize/,<CR>
-		vnoremap <Leader>t= :Tabularize/=<CR>
-		nnoremap <Leader>t= :Tabularize/=<CR>
-		vnoremap <Leader>t: :Tabularize/:\zs<CR>
-		nnoremap <Leader>t: :Tabularize/:\zs<CR>
-	endif
+    " Tabular{{{
+    if exists(":Tabularize")
+        vnoremap <Leader>t& :Tabularize/&<CR>
+        nnoremap <Leader>t& :Tabularize/&<CR>
+        vnoremap <Leader>t, :Tabularize/,<CR>
+        nnoremap <Leader>t, :Tabularize/,<CR>
+        vnoremap <Leader>t= :Tabularize/=<CR>
+        nnoremap <Leader>t= :Tabularize/=<CR>
+        vnoremap <Leader>t: :Tabularize/:\zs<CR>
+        nnoremap <Leader>t: :Tabularize/:\zs<CR>
+    endif
 
-	if exists(":TableModeToggle")
-		nnoremap <Leader>tm :TableModeToggle<CR>
-		let g:table_mode_corner="|"
-		let g:table_mode_corner_corner="+"
-		let g:table_mode_header_fillchar="="
-	endif
-	" }}}
-	
-	" dragvisuals -- drag visual block{{{
-	if exists("*DVB_Drag()")	
-		vmap <expr> <LEFT> 	DVB_Drag('left')
-		vmap <expr> <RIGHT>	DVB_Drag('right')
-		vmap <expr> <DOWN> 	DVB_Drag('down')
-		vmap <expr> <UP> 	DVB_Drag('up')
-	endif
-	if exists("*DVB_Duplicate()")	
-		
-		vmap <expr> D 		DVB_Duplicate()
-	endif
-	" }}}
-	
-	" Taglist{{{
-	if exists(":TlistToggle")
-		nnoremap <Leader>tl :TlistToggle<CR>
-		let g:Tlist_WinWidth = 40
-		let g:tlist_cpp_settings = 'c++;d:macro;c:classes;m:class members;'. 
-					\'f:functions;v:variables;l:local variables'
-		let g:tlist_python_settings = 'python;i:imports;c:classes;'. 
-					\'m:class members;f:functions;v:variables'
-		let g:tlist_tex_settings = 'tex;c:chapters;s:sections;'. 
-					\'u:subsections;b:subsubsections'
-		let g:Tlist_GainFocus_On_ToggleOpen = 1
-		if exists(":WMToggle")
-			let g:winManagerWindowLayout = 'FileExplorer|TagList'
-"			let g:winManagerWindowLayout = 'NERDTree|TagList'
-			nnoremap <Leader>wm :WMToggle<CR>
-		endif
-	endif
+    if exists(":TableModeToggle")
+        nnoremap <Leader>tm :TableModeToggle<CR>
+        let g:table_mode_corner="|"
+        let g:table_mode_corner_corner="+"
+        let g:table_mode_header_fillchar="="
+    endif
+    " }}}
+
+    " dragvisuals -- drag visual block{{{
+    if exists("*DVB_Drag()")
+        vmap <expr> <LEFT>     DVB_Drag('left')
+        vmap <expr> <RIGHT>    DVB_Drag('right')
+        vmap <expr> <DOWN>     DVB_Drag('down')
+        vmap <expr> <UP>     DVB_Drag('up')
+    endif
+    if exists("*DVB_Duplicate()")
+
+        vmap <expr> D         DVB_Duplicate()
+    endif
+    " }}}
+
+    " Taglist{{{
+    if exists(":TlistToggle")
+        nnoremap <Leader>tl :TlistToggle<CR>
+        let g:Tlist_WinWidth = 40
+        let g:tlist_cpp_settings = 'c++;d:macro;c:classes;m:class members;'.
+                    \'f:functions;v:variables;l:local variables'
+        let g:tlist_python_settings = 'python;i:imports;c:classes;'.
+                    \'m:class members;f:functions;v:variables'
+        let g:tlist_tex_settings = 'tex;c:chapters;s:sections;'.
+                    \'u:subsections;b:subsubsections'
+        let g:Tlist_GainFocus_On_ToggleOpen = 1
+        if exists(":WMToggle")
+            let g:winManagerWindowLayout = 'FileExplorer|TagList'
+"            let g:winManagerWindowLayout = 'NERDTree|TagList'
+            nnoremap <Leader>wm :WMToggle<CR>
+        endif
+    endif
     "}}}
-    
+
     "Tagbar{{{
     if exists(":TagbarToggle")
         nnoremap <F8> :TagbarToggle<CR>
     endif
-	"}}}
-	
-	" Winmanager {{{
-	if exists(":WMToggle")
-		nnoremap <Leader>wm :WMToggle<CR>
-		let g:winManagerWidth=40
-	endif
-	" }}}
+    "}}}
+
+    " Winmanager {{{
+    if exists(":WMToggle")
+        nnoremap <Leader>wm :WMToggle<CR>
+        let g:winManagerWidth=40
+    endif
+    " }}}
 
     " syntastic {{{
-"    if exists(":lnext")
+    if exists(":lnext")
         nnoremap <LocalLeader>ne :lnext<CR>
         nnoremap <LocalLeader>pe :lprevious<CR>
         nnoremap <LocalLeader>fe :lfirst<CR>
         nnoremap <LocalLeader>le :llast<CR>
-"    endif
+    endif
     " }}}
 
 "" vim-lexical {{{
@@ -619,72 +717,89 @@ function! LoadPluginScript()
 " }}}
 
 " indent_guides {{{
-if exists("g:loaded_indent_guides")
-    call indent_guides#enable()
+" if exists("g:loaded_indent_guides")
+"     call indent_guides#enable()
+" endif
+"}}}
+
+" UndoTree {{{
+if exists("g:loaded_undotree")
+ nnoremap <Leader>ut :UndotreeToggle<CR>
 endif
 "}}}
 
-"{{{
- nnoremap <Leader>ut :UndotreeToggle<CR>
-"}}}
+" Dict {{{
+if exists("g:loaded_dict")
+
+ let g:dict_hosts = [
+     \["dict.org", ["wn", "moby"]],
+     \["dict.mova.org", []]
+ \]
+
+ nnoremap <LocalLeader>cd :execute "Dict ".expand('<cword>')<CR>
+endif
+" }}}
+
+
 
 endfunction
 
 " called after plugins are initiated.
 augroup plugin_initialize
-	autocmd!
-	autocmd VimEnter * call LoadPluginScript()
+    autocmd!
+    autocmd VimEnter * call LoadPluginScript()
 augroup END
 
 
-" " pencil {{{
-" augroup pencil_Init_Per_FileType
-"   autocmd!
-"   autocmd FileType markdown,mkd call pencil#init({'wrap': 'soft'})
-"   autocmd FileType text         call pencil#init({'wrap': 'hard'})
-"   autocmd FileType tex          call pencil#init({'wrap': 'hard'})
-" augroup END
+" pencil {{{
+augroup pencil_Init_Per_FileType
+  autocmd!
+  autocmd FileType markdown,mkd call pencil#init({'wrap': 'soft'})
+  autocmd FileType text         call pencil#init({'wrap': 'hard'})
+  autocmd FileType tex     call pencil#init({'wrap': 'hard'})
+  autocmd FileType org     call pencil#init({'wrap': 'soft'})
+augroup END
 "}}}
 
 " }}}
 
-" }}}
+"}}}
 
 " Filetype specific(including plugin configure){{{
 " Makefile editing{{{
 nnoremap <leader>em :split ./makefile<CR>
 " }}}
 
-" Vimrc editing{{{ 
+" Vimrc editing{{{
 nnoremap <Leader>ev :vsplit $MYVIMRC<CR>
 nnoremap <Leader>sv :source $MYVIMRC<CR>
 
 " Vim folding{{{
 augroup filetype_vim
-	autocmd!
-	autocmd FileType vim setlocal foldmethod=marker
-	autocmd Filetype vim setlocal formatoptions=croqn 	" wrapping disbled for code
+    autocmd!
+    autocmd FileType vim setlocal foldmethod=marker
+    autocmd Filetype vim setlocal formatoptions=croqn     " wrapping disbled for code
 augroup END
 " }}}
 " }}}
 
-" C++ specific{{{ 
+" C++ specific{{{
 augroup filetype_cpp
-	autocmd!
-	autocmd filetype cpp,c setlocal foldmethod=syntax
-"	autocmd filetype cpp,c let g:clang_auto_select=1
-"	if s:os == 'Darwin' || s:os == 'Mac'
-"		autocmd filetype cpp,c let g:clang_library_path="/Library/Developer/CommandLineTools/usr/lib/"
-"	elseif s:os == 'Linux'
-"		autocmd filetype cpp,c let g:clang_library_path="/usr/lib"
-"	endif
-"	autocmd filetype cpp,c let g:clang_close_auto=1
-"	autocmd filetype cpp,c let g:clang_complete_copen=1
-"	autocmd filetype cpp,c let g:clang_hl_errors=1
-"	autocmd filetype cpp,c let g:clang_close_preview=1
-	autocmd Filetype cpp,c setlocal tw=80 
-	autocmd Filetype cpp,c setlocal formatoptions=tcroqnj 
- 	autocmd Filetype cpp,c inoremap <buffer> <CR> <esc>:call EnterBetweenBraces()<CR>a
+    autocmd!
+    autocmd filetype cpp,c setlocal foldmethod=syntax
+"    autocmd filetype cpp,c let g:clang_auto_select=1
+"    if s:os == 'Darwin' || s:os == 'Mac'
+"        autocmd filetype cpp,c let g:clang_library_path="/Library/Developer/CommandLineTools/usr/lib/"
+"    elseif s:os == 'Linux'
+"        autocmd filetype cpp,c let g:clang_library_path="/usr/lib"
+"    endif
+"    autocmd filetype cpp,c let g:clang_close_auto=1
+"    autocmd filetype cpp,c let g:clang_complete_copen=1
+"    autocmd filetype cpp,c let g:clang_hl_errors=1
+"    autocmd filetype cpp,c let g:clang_close_preview=1
+    autocmd Filetype cpp,c setlocal tw=80
+    autocmd Filetype cpp,c setlocal formatoptions=tcroqnj
+     autocmd Filetype cpp,c inoremap <buffer> <CR> <esc>:call EnterBetweenBraces()<CR>a
 augroup END
 " }}}
 
@@ -700,13 +815,13 @@ let g:python3_host_prog = '/usr/bin/python'
 " }}}
 
 augroup filetype_python
-	autocmd!
-	autocmd filetype python setlocal tabstop=4
-	autocmd filetype python setlocal sw=4
-	autocmd filetype python setlocal softtabstop=0
-	autocmd filetype python setlocal foldmethod=indent
-	autocmd filetype python setlocal formatoptions=croqnj
-	autocmd filetype python setlocal expandtab
+    autocmd!
+    autocmd filetype python setlocal tabstop=4
+    autocmd filetype python setlocal sw=4
+    autocmd filetype python setlocal softtabstop=0
+    autocmd filetype python setlocal foldmethod=indent
+    autocmd filetype python setlocal formatoptions=croqnj
+    autocmd filetype python setlocal expandtab
 augroup END
 
 augroup IPy_vim_neo
@@ -736,48 +851,63 @@ let g:tex_flavor='latex'
 set iskeyword+=:
 
 augroup filetype_Tex
-	autocmd!
-"	autocmd Filetype tex setlocal dictionary+="~/.vim/bundle/vim-latex-suite/ftplugin/latex-suite/dictionaries/dictionary"
-"	autocmd Filetype tex setlocal dictionary+="/usr/share/dict/words"
-    autocmd Filetype tex setlocal dictionary+=/usr/share/dict/american-english
+    autocmd!
+"    autocmd Filetype tex setlocal dictionary+="~/.vim/bundle/vim-latex-suite/ftplugin/latex-suite/dictionaries/dictionary"
+"    autocmd Filetype tex setlocal dictionary+="/usr/share/dict/words"
+    if findfile("/usr/share/dict/american-english",".") == "dictionary+=/usr/share/dict/american-english"
+        autocmd Filetype tex setlocal dictionary+=/usr/share/dict/american-english
+    endif
 "   autocmd Filetype tex setlocal dictionary+="/usr/share/dict/british-english"
     autocmd Filetype tex setlocal thesaurus+=~/.vim/thesaurus/mthesaur.txt
 
-	autocmd Filetype tex inoremap <buffer> ``'' ``''<++><esc>F`a
-	autocmd Filetype tex setlocal spell
-	autocmd Filetype tex setlocal tw=80
-	autocmd Filetype tex setlocal formatoptions=tcroq2j
+    autocmd Filetype tex inoremap <buffer> ``'' ``''<++><esc>F`a
+    autocmd Filetype tex setlocal spell
+    autocmd Filetype tex setlocal tw=80
+    autocmd Filetype tex setlocal formatoptions=tcroq2j
 augroup END
-" }}}	
+" }}}
 
 " Markdown specific{{{
 augroup filetype_markdown
-	autocmd!
-	autocmd BufNewFile,BufReadPost *.md set filetype=markdown
-	autocmd Filetype markdown inoremap <buffer> ``<Space> ``<++><esc>F`i
-	autocmd Filetype markdown inoremap <buffer> ``` ```<CR>```<++><esc>k$a
+    autocmd!
+"    autocmd BufNewFile,BufReadPost *.md set filetype=markdown
+    autocmd Filetype markdown inoremap <buffer> ``<Space> ``<++><esc>F`i
+    autocmd Filetype markdown inoremap <buffer> ``` ```<CR>```<++><esc>k$a
 augroup END
 " }}}
 
 "journal file definition{{{
 augroup filetype_journal_definition
-	autocmd!
-	autocmd BufRead,BufNewFile *.journal 	set filetype=journal
-	autocmd Filetype journal setlocal foldmethod=indent
-	autocmd Filetype journal setlocal syntax=tex
-	autocmd Filetype journal setlocal textwidth=80
-	autocmd Filetype journal setlocal spell
-	autocmd Filetype journal setlocal formatoptions=tcroq2j
-augroup END	
+    autocmd!
+    autocmd BufRead,BufNewFile *.journal     set filetype=journal
+    autocmd Filetype journal setlocal foldmethod=indent
+    autocmd Filetype journal setlocal syntax=tex
+    autocmd Filetype journal setlocal textwidth=80
+    autocmd Filetype journal setlocal spell
+    autocmd Filetype journal setlocal formatoptions=tcroq2j
+augroup END
 "}}}
 
 " Org-mode {{{
-  let g:org_agenda_files=['~/org/index.org']
+  let g:org_agenda_files=['~/research_Documents/research/journal.org', '~/projects/todo-list.org']
 augroup filetype_org
-	autocmd!
-    autocmd Filetype org setlocal dictionary+=/usr/share/dict/american-english
+    autocmd!
+    if findfile("/usr/share/dict/american-english",".") == "dictionary+=/usr/share/dict/american-english"
+        autocmd Filetype org setlocal dictionary+=/usr/share/dict/american-english
+    endif
     autocmd Filetype org setlocal spell
-    autocmd Filetype tex setlocal thesaurus+=~/.vim/thesaurus/mthesaur.txt
+"   autocmd Filetype tex setlocal thesaurus+=~/.vim/thesaurus/mthesaur.txt
+   autocmd Filetype org setlocal sw=1
+   autocmd Filetype org setlocal tabstop=1
+augroup END
+" }}}
+
+" gnuplot {{{
+augroup filetype_gnutplot
+    autocmd!
+    autocmd BufNewFile,BufReadPost *.gnuplot set filetype=gnuplot
+    autocmd BufNewFile,BufReadPost *.plt set filetype=gnuplot
+    autocmd BufNewFile,BufReadPost *.gnu set filetype=gnuplot
 augroup END
 " }}}
 
