@@ -34,6 +34,10 @@ nnoremap H 0
 vnoremap H 0
 nnoremap L $
 vnoremap L $
+nnoremap T H
+vnoremap T H
+nnoremap B L
+vnoremap B L
 
 " Add line mapping
 nnoremap o o<esc>
@@ -53,7 +57,7 @@ endif
  nnoremap <A-l> :wincmd l<CR>
 
 " Toggle on/off copymode
-nnoremap <Leader>cm :call ToggleCopyMode() <CR>
+" nnoremap <Leader>cm :call ToggleCopyMode() <CR>
 
 " Command mode shortcuts
 " use <C-k> to truncate the commandline content to the end of the line.
@@ -114,39 +118,12 @@ if has("conceallevel")
     set conceallevel=2
 endif
 
-" " color personalization
-"  highlight Visual ctermbg=144 ctermfg=235
-" " highlight Visual cterm=reverse
-"  highlight MatchParen ctermbg=115
-"  highlight PreProc ctermfg=4
-" " highlight Comment ctermfg=4
-"  highlight User1 ctermbg=16 ctermfg=130 cterm=bold
-"  highlight User2 ctermbg=130 ctermfg=16 cterm=bold
-
-" ruler, statusline, tabline {{{
-"function! InsertStatuslineColor(mode)
-"  if a:mode == 'i'
-"    hi statusline ctermbg=Blue guibg=Blue
-"  elseif a:mode == 'r'
-"    hi statusline ctermbg=magenta guibg=magenta
-"  else
-"    hi statusline ctermbg=red guibg=red
-"  endif
-"endfunction
-
-"augroup statusLineColor
-"  au InsertEnter * call InsertStatuslineColor(v:insertmode)
-"  au InsertChange * call InsertStatuslineColor(v:insertmode)
-"  au InsertLeave * hi statusline ctermbg=green guibg=green
-"augroup END
-
  set ruler
 " set statusline=%1*%f%r%m\ %2*\ Filetype:\ %y\ %0*%<%=%2*\ C:%v\ L:%l/%L%0*
 " hi statusline ctermbg=green guibg=green cterm=bold
 " set rulerformat=%35(%f\ %c%V-%l/%L\ %p%%%)
  set laststatus=2
  set backspace=indent,eol,start
-
 
 " tabline
 function! MyTabLabel(n)
@@ -196,25 +173,26 @@ function! MyTabLine()
 endfunction
 
 set tabline=%!MyTabLine()
-" }}}
 
-" number/relative number
-if (version == 7.4)+(version==704)
-    set number
-    augroup buffer_switch
-        autocmd!
-        autocmd BufEnter * setlocal relativenumber
-        autocmd BufLeave * setlocal norelativenumber
-    augroup END
-elseif (version == 7.3)+(version==703)
-    augroup buffer_switch
-        autocmd!
-        autocmd BufEnter * setlocal relativenumber
-        autocmd BufLeave * setlocal number
-    augroup END
-else
-    set number
-endif
+" " number/relative number
+" if (version == 7.4)+(version==704)
+"     set number
+"     augroup buffer_switch
+"         autocmd!
+"         autocmd BufEnter * setlocal relativenumber
+"         autocmd BufLeave * setlocal norelativenumber
+"     augroup END
+" elseif (version == 7.3)+(version==703)
+"     augroup buffer_switch
+"         autocmd!
+"         autocmd BufEnter * setlocal relativenumber
+"         autocmd BufLeave * setlocal number
+"     augroup END
+" else
+"     set number
+" endif
+
+set number
 
 "set spell
 syntax enable
@@ -348,102 +326,74 @@ endfunction
 " }}}
 " }}}
 
-" Vundle, plugin manager{{{
-" set rtp+=~/.vim/bundle/Vundle.vim " load vundle
+" plugin manager{{{
 " call vundle#begin()
  call plug#begin('~/.vim/plugged')
 
-" set runtimepath^=~/.vim/bundle/neobundle.vim/
-" call neobundle#begin(expand('~/.vim/bundle/'))
-"
- " Let NeoBundle manage NeoBundle
-" required:
-"  NeoBundleFetch 'Shougo/neobundle.vim'
-
- " let Vundle manage Vundle
-" required!
-" Plugin 'VundleVim/Vundle.vim'
-
- " Plug for other add-ons
+ " general
+ Plug 'tpope/vim-surround'
+ Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle', 'NERDTree'] }
+ " Plugins for LaTeX 
  Plug 'gerw/vim-latex-suite'
  Plug 'xuhdev/vim-latex-live-preview'
-" Plug 'houtsnip/vim-emacscommandline'
- Plug 'scrooloose/nerdtree'
-" Plug 'Shougo/unite.vim'
  " Session Saving
- Plug 'xolox/vim-session'
+ Plug 'xolox/vim-session', { 'on': ['OpenSession', 'OpenTabSession', 'SaveSession', 'SaveTabSession'] }
  Plug 'xolox/vim-misc'
- Plug 'tpope/vim-surround'
  Plug 'nathanaelkane/vim-indent-guides'
 " Git related
+ Plug 'tpope/vim-fugitive'
  Plug 'airblade/vim-gitgutter'
 " Encryption
- Plug 'jamessan/vim-gnupg'
 " Auto-complete tool set
 " General tools
 " Plug 'Shougo/unite-session'
- Plug 'godlygeek/tabular'
- Plug 'dhruvasagar/vim-table-mode'
+ Plug 'godlygeek/tabular', { 'on': ['Tabularize'] }
+ Plug 'dhruvasagar/vim-table-mode', {'on': 'TableModeToggle' }
  Plug 'mbbill/undotree'
  Plug 'vim-airline/vim-airline'
  Plug 'vim-airline/vim-airline-themes'
 if version>=703 || (version>7.3 && version<10.0)
     Plug 'justmao945/vim-clang'
-    Plug 'davidhalter/jedi-vim'
+    Plug 'davidhalter/jedi-vim', { 'for': 'python' }
 " syntax checking
-    Plug 'scrooloose/syntastic'
-    Plug 'chazy/cscope_maps'
+   Plug 'scrooloose/syntastic'
+"    Plug 'chazy/cscope_maps'
     Plug 'reedes/vim-pencil'  " autowrap
 endif
-if exists(":tnoremap")
-"   Plug 'benekastah/neomake'
-    Plug 'bfredl/nvim-ipy'
-    Plug 'kassio/neoterm'
+if has('nvim') 
+    Plug 'benekastah/neomake'
+    Plug 'bfredl/nvim-ipy', { 'for': 'python' }
+"   Plug 'kassio/neoterm'
     Plug 'Shougo/deoplete.nvim'
 endif
  Plug 'ervandew/supertab'
-" Plug 'plasticboy/vim-markdown'
  Plug 'tpope/vim-markdown'
  Plug 'Ron89/md_insert_equation.vim'
  Plug 'shinokada/dragvisuals.vim'
-" Plug 'ron89/vim-copymode'
  Plug 'vim-scripts/gnuplot.vim'
 " window manager
- Plug 'vim-scripts/taglist.vim'
  Plug 'majutsushi/tagbar'
- Plug 'vim-scripts/winmanager'
- Plug 'szw/vim-maximizer'
 " Language plugin
-" Plug 'beloglazov/vim-online-thesaurus'
  Plug 'ron89/vimdictive'
  Plug 'ron89/thesaurus_query.vim'
-" Plug 'szw/vim-dict'
- Plug 'rhysd/vim-grammarous'
+" Plug 'rhysd/vim-grammarous'
 " Utilities
-" Plug 'itchyny/dictionary.vim'
- Plug 'itchyny/calendar.vim'
-" Plug 'mattn/calendar-vim'
+ Plug 'jamessan/vim-gnupg'  "encryption
+ Plug 'itchyny/calendar.vim', { 'on': 'Calendar' }
 " VOoM and organizer
- Plug 'vim-voom/VOoM'
- Plug 'tpope/vim-fugitive'
- Plug 'mileszs/ack.vim'
-" vim wiki
-" org-mode
+ Plug 'mileszs/ack.vim', { 'on': 'Ack' }
+" orgmode
  Plug 'tpope/vim-speeddating'
  Plug 'vim-scripts/SyntaxRange'
  Plug 'ron89/vim-orgmode'
  Plug 'vim-scripts/utl.vim'
 " Color scheme
-" Plug 'flazz/vim-colorschemes'
  Plug 'reedes/vim-colors-pencil'
  Plug 'altercation/vim-colors-solarized'
  Plug 'romainl/Apprentice'
  Plug 'tpope/vim-vividchalk'
  Plug 'morhetz/gruvbox'
-" Plug 'itchyny/lightline.vim'
-" call neobundle#end()
  call plug#end()
-" call vundle#end()
 
 " }}}
 
@@ -486,13 +436,14 @@ let g:DVB_TrimWS = 1
 " color solarized
 
 " Ack/silver_search {{{
- let g:ackprg = 'ag --nogroup --nocolor --column'
+" let g:ackprg = 'ag --nogroup --nocolor --column'
 " }}}
 
 " thesaurus_query options {{{
 " let g:thesaurus_query#display_list_all_time = 1
 " let g:thesaurus_query#use_local_thesaurus_source_as_primary = 0
- let g:thesaurus_query#enabled_backends=["thesaurus_com","datamuse_com","mthesaur_txt"]
+" let g:thesaurus_query#enabled_backends=["thesaurus_com","datamuse_com","jeck_ru","mthesaur_txt"]
+let g:tq_language = ['ru', 'en']
 " source ~/.vim/thesaurus_query.vim/plugin/thesaurus_query.vim
 " }}}
 
@@ -502,28 +453,16 @@ let g:DVB_TrimWS = 1
 " }}}
 
 " Indent guide {{{
+ let g:indent_guides_guide_size = 1
 " let g:indent_guides_auto_colors = 0
 " hi IndentGuidesOdd  ctermbg=lightgrey
 " hi IndentGuidesEven ctermbg=grey
+ let g:indent_guides_enable_on_vim_startup = 1
+ let g:indent_guides_exclude_filetypes = ['help', 'nerdtree', 'vim', 'tex', 'markdown', 'calendar']
+
 " }}}
 
 " syntastics {{{
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-
-let g:syntastic_python_python_exec = 'python2'
-let g:syntastic_python_checkers = ['pylint']
-let g:syntastic_python_flake8_exec = 'flake8-python2'
-let g:syntastic_python_pylint_exec = 'pylint2'
-let g:syntastic_quiet_messages = { "level": "warnings" }
-let g:syntastic_python_pylint_quiet_messages = { "level" : ["warnings"] }
-
 "}}}
 
 " cmdline configuration {{{
@@ -558,6 +497,11 @@ let g:syntastic_python_pylint_quiet_messages = { "level" : ["warnings"] }
 let cmdline_follow_colorscheme = 1
 " }}}
 
+"" supertab {{{
+"let g:SuperTabDefaultCompletionType = "context"
+"let g:SuperTabContextTextOmniPrecedence = ['&omnifunc', '&completefunc']
+"" }}}
+
 " " vim-lexical
 " let g:lexical#spell = 1
 " let g:lexical#thesaurus = ['~/.vim/thesaurus/mthesaur.txt',]
@@ -575,7 +519,7 @@ let cmdline_follow_colorscheme = 1
  let g:pencil#conceallevel = 2
 " }}}
 
-" org-mode {{{
+" orgmode {{{
  let g:org_indent = 0
  let g:org_todo_keywords = [['TODO', 'WAITING', 'STALLED', '|', 'DONE'],
    \   ['|', 'CANCELED']]
@@ -583,6 +527,7 @@ let cmdline_follow_colorscheme = 1
    \   ['CANCELED', [':foreground red', ':background black', ':weight bold',
    \   ':slant italic', ':decoration underline']]]
  let g:org_prefer_insert_mode = 0
+ let g:org_aggressive_conceal = 1
 "}}}
 
 " Calendar {{{
@@ -594,14 +539,46 @@ let cmdline_follow_colorscheme = 1
 let g:languagetool_jar='$HOME/Softwares/LanguageTool-3.2/languagetool-commandline.jar'
 " }}}
 
-" neo-make setup {{{
-"  augroup NeoMake
-"   autocmd!
-"   autocmd! BufWritePost * Neomake
-"  augroup END
-"  let g:neomake_python_enabled_makers = ['pylint2']
-"  let g:neomake_verbose = 0
-" 
+" neo-make/syntastic setup {{{
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+" <+temporary+>
+if has('nvim')
+  augroup NeoMake
+   autocmd!
+   autocmd! BufReadPost * Neomake
+   autocmd! BufWritePost * Neomake
+  augroup END
+  let g:neomake_python_pylint_exe = 'pylint2'
+  let g:neomake_python_pep8_exe = 'pep8-python2'
+  let g:neomake_python_enabled_makers = ['pylint']
+  let g:neomake_verbose = 1
+  let g:neomake_error_sign = {
+     \ 'texthl': 'ErrorMsg',
+     \ }
+  " disable syntastic
+  let g:syntastic_mode_map = {"mode": "passive"}
+else
+ if !exists("g:syntastic_mode_map")
+    let g:syntastic_mode_map = {"mode": "active"}
+ else
+    let g:syntastic_mode_map["mode"] = "active"
+ endif
+     let g:syntastic_always_populate_loc_list = 1
+     let g:syntastic_auto_loc_list = 1
+     let g:syntastic_check_on_open = 1
+     let g:syntastic_check_on_wq = 0
+     
+     let g:syntastic_python_python_exec = 'python2'
+     let g:syntastic_python_checkers = ['pylint']
+     let g:syntastic_python_flake8_exec = 'flake8-python2'
+     let g:syntastic_python_pylint_exec = 'pylint2'
+     let g:syntastic_quiet_messages = { "level": "warnings" }
+     let g:syntastic_python_pylint_quiet_messages = { "level" : ["warnings"] }
+endif
+
 " " }}}
 
 " utl {{{
@@ -644,9 +621,9 @@ function! LoadPluginScript()
 
     if exists(":TableModeToggle")
         nnoremap <Leader>tm :TableModeToggle<CR>
-        let g:table_mode_corner="|"
-        let g:table_mode_corner_corner="+"
-        let g:table_mode_header_fillchar="="
+        let g:table_mode_corner="+"
+        let g:table_mode_corner_corner="|"
+        let g:table_mode_header_fillchar="-"
     endif
     " }}}
 
@@ -688,6 +665,12 @@ function! LoadPluginScript()
     endif
     "}}}
 
+    "Tagbar{{{
+    if exists(":NERDTreeToggle")
+        nnoremap <Leader>nt :NERDTreeToggle<CR>
+    endif
+    "}}}
+    "
     " Winmanager {{{
     if exists(":WMToggle")
         nnoremap <Leader>wm :WMToggle<CR>
@@ -756,8 +739,10 @@ augroup pencil_Init_Per_FileType
   autocmd!
   autocmd FileType markdown,mkd call pencil#init({'wrap': 'soft'})
   autocmd FileType text         call pencil#init({'wrap': 'hard'})
-  autocmd FileType tex     call pencil#init({'wrap': 'hard'})
+  autocmd FileType tex     call pencil#init({'wrap': 'soft'})
+              \ | setl concealcursor=c
   autocmd FileType org     call pencil#init({'wrap': 'soft'})
+              \ | setl concealcursor=nc
 augroup END
 "}}}
 
@@ -787,6 +772,7 @@ augroup END
 augroup filetype_cpp
     autocmd!
     autocmd filetype cpp,c setlocal foldmethod=syntax
+    autocmd filetype cpp,c setlocal foldcolumn=4
 "    autocmd filetype cpp,c let g:clang_auto_select=1
 "    if s:os == 'Darwin' || s:os == 'Mac'
 "        autocmd filetype cpp,c let g:clang_library_path="/Library/Developer/CommandLineTools/usr/lib/"
@@ -820,6 +806,7 @@ augroup filetype_python
     autocmd filetype python setlocal sw=4
     autocmd filetype python setlocal softtabstop=0
     autocmd filetype python setlocal foldmethod=indent
+    autocmd filetype python setlocal foldcolumn=4
     autocmd filetype python setlocal formatoptions=croqnj
     autocmd filetype python setlocal expandtab
 augroup END
@@ -859,8 +846,8 @@ augroup filetype_Tex
     endif
 "   autocmd Filetype tex setlocal dictionary+="/usr/share/dict/british-english"
     autocmd Filetype tex setlocal thesaurus+=~/.vim/thesaurus/mthesaur.txt
-
-    autocmd Filetype tex inoremap <buffer> ``'' ``''<++><esc>F`a
+    autocmd filetype tex setlocal foldcolumn=4
+    autocmd Filetype tex inoremap <buffer> ``'' ``''<esc>F`a
     autocmd Filetype tex setlocal spell
     autocmd Filetype tex setlocal tw=80
     autocmd Filetype tex setlocal formatoptions=tcroq2j
@@ -899,6 +886,8 @@ augroup filetype_org
 "   autocmd Filetype tex setlocal thesaurus+=~/.vim/thesaurus/mthesaur.txt
    autocmd Filetype org setlocal sw=1
    autocmd Filetype org setlocal tabstop=1
+   autocmd Filetype org call SyntaxRange#Include('[^\\]\$', '[$\n\r\t]', 'tex') " aggressive latex mode
+"   autocmd Filetype org setlocal concealcursor=n
 augroup END
 " }}}
 
@@ -908,6 +897,13 @@ augroup filetype_gnutplot
     autocmd BufNewFile,BufReadPost *.gnuplot set filetype=gnuplot
     autocmd BufNewFile,BufReadPost *.plt set filetype=gnuplot
     autocmd BufNewFile,BufReadPost *.gnu set filetype=gnuplot
+augroup END
+" }}}
+
+" as mutt editor {{{
+augroup mailfiletypedetect
+  autocmd BufRead /tmp/mutt-* set tw=72
+  autocmd BufRead,BufNewFile *mutt-*              setfiletype mail
 augroup END
 " }}}
 
