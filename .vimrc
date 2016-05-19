@@ -27,7 +27,7 @@ let s:os=substitute(system('uname'),'\n','','')
 
 " Basic mapping{{{
 let mapleader=','
-" let maplocalleader='m'
+let maplocalleader='\'
 
 " browse mapping
 nnoremap H 0
@@ -194,6 +194,21 @@ set tabline=%!MyTabLine()
 
 set number
 
+" set folding {{{
+function! NeatFoldText()
+    let line = ' ' . substitute(getline(v:foldstart), '^\s*"\?\s*\|\s*"\?\s*{{' . '{\d*\s*', '', 'g') . ' '
+    let lines_count = v:foldend - v:foldstart + 1
+    let lines_count_text = '| ' . printf("%10s", lines_count . ' lines') . ' |'
+    let foldchar = matchstr(&fillchars, 'fold:\zs.')
+    let foldtextstart = strpart('+' . repeat(foldchar, v:foldlevel*2) . line, 0, (winwidth(0)*2)/3)
+    let foldtextend = lines_count_text . repeat(foldchar, 8)
+    let foldtextlength = strlen(substitute(foldtextstart . foldtextend, '.', 'x', 'g')) + &foldcolumn
+    return foldtextstart . repeat(foldchar, winwidth(0)-foldtextlength) . foldtextend
+endfunction
+
+set foldtext=NeatFoldText()
+" }}}
+
 "set spell
 syntax enable
 " let g:lexical#dictionary = ['/usr/share/dict/american-english','/usr/share/dict/british','/usr/share/dict/british-english']
@@ -341,6 +356,7 @@ endfunction
  Plug 'xolox/vim-misc'
  Plug 'nathanaelkane/vim-indent-guides'
 " Git related
+ Plug 'zenbro/mirror.vim'
  Plug 'tpope/vim-fugitive'
  Plug 'airblade/vim-gitgutter'
 " Encryption
@@ -375,6 +391,7 @@ endif
  Plug 'majutsushi/tagbar'
 " Language plugin
  Plug 'ron89/vimdictive'
+" Plug 'beloglazov/vim-online-thesaurus'
  Plug 'ron89/thesaurus_query.vim'
 " Plug 'rhysd/vim-grammarous'
 " Utilities
@@ -393,8 +410,8 @@ endif
  Plug 'romainl/Apprentice'
  Plug 'tpope/vim-vividchalk'
  Plug 'morhetz/gruvbox'
+ Plug 'vim-scripts/summerfruit256.vim'
  call plug#end()
-
 " }}}
 
 " configure for convenient vim plugins{{{
@@ -409,24 +426,24 @@ let g:DVB_TrimWS = 1
  endif
 " }}}
 
-" powerline initiation
+" powerline initiation {{{
 " set rtp+=/usr/lib/python2.7/site-packages/powerline/bindings/vim
 " set t_Co=256
-"
-" let g:ycm_global_ycm_extra_conf='~/.config/YouCompleteMe/.ycm_extra_conf.py'
+" }}}
 
-" vim-latex configuration
+" vim-latex configuration {{{
  let g:Tex_ViewRule_pdf='evince'
  let g:Tex_ViewRule_dvi='xdvi -s 5 -keep -hush -editor "vim --servername vimlatex --remote +\%l \%f"'
  let g:Tex_ViewRule_pdf='zathura -x "vim --servername vimlatex --remote +\%{line} \%{input}"'
  let g:Tex_CompileRule_dvi='latex -interaction=nonstopmode -src-specials $*'
  let g:Tex_CompileRule_pdf='pdflatex -synctex=1 -interaction=nonstopmode -src-specials $*'
-
-" Color scheme
+" }}}
+" Color scheme {{{
  set background=dark
 " let g:airline_theme = 'gruvbox'
 " colors pencil
  colors gruvbox
+ highlight Folded cterm=bold gui=bold
 
 " airline config
  let g:airline_powerline_fonts = 1
@@ -434,24 +451,20 @@ let g:DVB_TrimWS = 1
 "  let g:airline#extensions#tabline#left_sep = ' '
 "  let g:airline#extensions#tabline#left_alt_sep = '|'
 " color solarized
-
-" Ack/silver_search {{{
-" let g:ackprg = 'ag --nogroup --nocolor --column'
 " }}}
-
+" Ack/silver_search {{{
+ let g:ackprg = 'ag --nogroup --nocolor --column'
+" }}}
 " thesaurus_query options {{{
 " let g:thesaurus_query#display_list_all_time = 1
-" let g:thesaurus_query#use_local_thesaurus_source_as_primary = 0
+" let g:thesaurus_query#use_local_thesaurus_source_as_primary = 1
 " let g:thesaurus_query#enabled_backends=["thesaurus_com","datamuse_com","jeck_ru","mthesaur_txt"]
-let g:tq_language = ['ru', 'en']
-" source ~/.vim/thesaurus_query.vim/plugin/thesaurus_query.vim
+" let g:tq_language = ['de', 'ru', 'en']
 " }}}
-
 " vim-session{{{
  let g:session_autosave = 'no'
  let g:session_autoload = 'no'
 " }}}
-
 " Indent guide {{{
  let g:indent_guides_guide_size = 1
 " let g:indent_guides_auto_colors = 0
@@ -461,10 +474,6 @@ let g:tq_language = ['ru', 'en']
  let g:indent_guides_exclude_filetypes = ['help', 'nerdtree', 'vim', 'tex', 'markdown', 'calendar']
 
 " }}}
-
-" syntastics {{{
-"}}}
-
 " cmdline configuration {{{
 " let cmdline_vsplit = 1        " Split the window vertically
 " let g:cmdline_esc_term = 1      " Remap <Esc> to :stopinsert in Neovim terminal
@@ -496,29 +505,29 @@ let g:tq_language = ['ru', 'en']
 " endif
 let cmdline_follow_colorscheme = 1
 " }}}
-
 "" supertab {{{
 "let g:SuperTabDefaultCompletionType = "context"
 "let g:SuperTabContextTextOmniPrecedence = ['&omnifunc', '&completefunc']
 "" }}}
-
-" " vim-lexical
-" let g:lexical#spell = 1
-" let g:lexical#thesaurus = ['~/.vim/thesaurus/mthesaur.txt',]
-" let g:lexical#dictionary = ['/usr/share/dict/american-english','/usr/share/dict/british','/usr/share/dict/british-english']
-" " let g:lexical#spellfile = ['~/.vim/spell/en.utf-8.add',]
-
 " vim latex live preview {{{
  let g:livepreview_previewer = 'evince'
  set updatetime=8000
 " }}}
-
 " pencil mode {{{
- let g:pencil#wrapModeDefault = 'hard'
+ let g:pencil#wrapModeDefault = 'soft'
  let g:pencil#textwidth = 80
  let g:pencil#conceallevel = 2
-" }}}
 
+augroup pencil_Init_Per_FileType
+  autocmd!
+  autocmd FileType markdown,mkd call pencil#init({'wrap': 'soft'})
+  autocmd FileType text         call pencil#init({'wrap': 'hard'})
+  autocmd FileType tex     call pencil#init({'wrap': 'soft'})
+              \ | setl concealcursor=c
+  autocmd FileType org     call pencil#init({'wrap': 'soft'})
+              \ | setl concealcursor=nc
+augroup END
+" }}}
 " orgmode {{{
  let g:org_indent = 0
  let g:org_todo_keywords = [['TODO', 'WAITING', 'STALLED', '|', 'DONE'],
@@ -529,16 +538,13 @@ let cmdline_follow_colorscheme = 1
  let g:org_prefer_insert_mode = 0
  let g:org_aggressive_conceal = 1
 "}}}
-
 " Calendar {{{
  let g:calendar_google_calendar = 1
  let g:calendar_google_task = 1
 " }}}
-
 " language-tool {{{
 let g:languagetool_jar='$HOME/Softwares/LanguageTool-3.2/languagetool-commandline.jar'
 " }}}
-
 " neo-make/syntastic setup {{{
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
@@ -551,8 +557,8 @@ if has('nvim')
    autocmd! BufReadPost * Neomake
    autocmd! BufWritePost * Neomake
   augroup END
-  let g:neomake_python_pylint_exe = 'pylint2'
-  let g:neomake_python_pep8_exe = 'pep8-python2'
+"  let g:neomake_python_pylint_exe = 'pylint2'
+"  let g:neomake_python_pep8_exe = 'pep8-python2'
   let g:neomake_python_enabled_makers = ['pylint']
   let g:neomake_verbose = 1
   let g:neomake_error_sign = {
@@ -571,16 +577,15 @@ else
      let g:syntastic_check_on_open = 1
      let g:syntastic_check_on_wq = 0
      
-     let g:syntastic_python_python_exec = 'python2'
+"     let g:syntastic_python_python_exec = 'python2'
      let g:syntastic_python_checkers = ['pylint']
-     let g:syntastic_python_flake8_exec = 'flake8-python2'
-     let g:syntastic_python_pylint_exec = 'pylint2'
+"     let g:syntastic_python_flake8_exec = 'flake8-python2'
+"     let g:syntastic_python_pylint_exec = 'pylint2'
      let g:syntastic_quiet_messages = { "level": "warnings" }
      let g:syntastic_python_pylint_quiet_messages = { "level" : ["warnings"] }
 endif
 
 " " }}}
-
 " utl {{{
  let g:utl_cfg_hdl_mt_generic = "silent !xdg-open '%p' &"
  let g:utl_cfg_hdl_scm_http = "silent !firefox '%u#%f' &"
@@ -592,7 +597,6 @@ endif
 " let g:utl_cfg_hdl_mt_http = "silent !firefox '%u#%f' &"
 " let g:utl_cfg_hdl_mt_directory = "silent !xdg-open '%p' &"
 " }}}
-
 " " powerline {{{
 " set rtp+=/usr/lib/python2.7/site-packages/powerline/bindings/vim/
 " 
@@ -602,9 +606,8 @@ endif
 " " Use 256 colours (Use this setting only if your terminal supports 256 colours)
 " set t_Co=256
 " " }}}
-
 " }}}
-"
+
 " function initialization {{{
 function! LoadPluginScript()
     " Tabular{{{
@@ -626,7 +629,6 @@ function! LoadPluginScript()
         let g:table_mode_header_fillchar="-"
     endif
     " }}}
-
     " dragvisuals -- drag visual block{{{
     if exists("*DVB_Drag()")
         vmap <expr> <LEFT>     DVB_Drag('left')
@@ -639,7 +641,6 @@ function! LoadPluginScript()
         vmap <expr> D         DVB_Duplicate()
     endif
     " }}}
-
     " Taglist{{{
     if exists(":TlistToggle")
         nnoremap <Leader>tl :TlistToggle<CR>
@@ -658,26 +659,22 @@ function! LoadPluginScript()
         endif
     endif
     "}}}
-
     "Tagbar{{{
     if exists(":TagbarToggle")
         nnoremap <F8> :TagbarToggle<CR>
     endif
     "}}}
-
     "Tagbar{{{
     if exists(":NERDTreeToggle")
         nnoremap <Leader>nt :NERDTreeToggle<CR>
     endif
     "}}}
-    "
     " Winmanager {{{
     if exists(":WMToggle")
         nnoremap <Leader>wm :WMToggle<CR>
         let g:winManagerWidth=40
     endif
     " }}}
-
     " syntastic {{{
     if exists(":lnext")
         nnoremap <LocalLeader>ne :lnext<CR>
@@ -686,7 +683,6 @@ function! LoadPluginScript()
         nnoremap <LocalLeader>le :llast<CR>
     endif
     " }}}
-
 "" vim-lexical {{{
 " augroup lexical
 "  autocmd!
@@ -698,19 +694,16 @@ function! LoadPluginScript()
 "  autocmd Filetype journal call lexical#init()
 " augroup END
 " }}}
-
 " indent_guides {{{
 " if exists("g:loaded_indent_guides")
 "     call indent_guides#enable()
 " endif
 "}}}
-
 " UndoTree {{{
 if exists("g:loaded_undotree")
  nnoremap <Leader>ut :UndotreeToggle<CR>
 endif
 "}}}
-
 " Dict {{{
 if exists("g:loaded_dict")
 
@@ -722,33 +715,17 @@ if exists("g:loaded_dict")
  nnoremap <LocalLeader>cd :execute "Dict ".expand('<cword>')<CR>
 endif
 " }}}
-
-
-
 endfunction
 
-" called after plugins are initiated.
+" called after plugins are initiated. {{{
 augroup plugin_initialize
     autocmd!
     autocmd VimEnter * call LoadPluginScript()
 augroup END
-
-
-" pencil {{{
-augroup pencil_Init_Per_FileType
-  autocmd!
-  autocmd FileType markdown,mkd call pencil#init({'wrap': 'soft'})
-  autocmd FileType text         call pencil#init({'wrap': 'hard'})
-  autocmd FileType tex     call pencil#init({'wrap': 'soft'})
-              \ | setl concealcursor=c
-  autocmd FileType org     call pencil#init({'wrap': 'soft'})
-              \ | setl concealcursor=nc
-augroup END
-"}}}
-
+" }}}
 " }}}
 
-"}}}
+" }}}
 
 " Filetype specific(including plugin configure){{{
 " Makefile editing{{{
