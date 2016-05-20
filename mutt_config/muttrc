@@ -1,0 +1,99 @@
+## General options
+set header_cache = "~/.cache/mutt"
+set imap_check_subscribed
+set imap_keepalive = 300
+unset imap_passive
+set mail_check =60
+set mbox_type = Maildir
+set realname = "HE Chong"
+set editor = "nvim"
+
+source "gpg2 -dq ~/.mutt/passwd.gpg |"
+
+# contact using goobook
+set query_command="goobook query '%s'"
+macro index,pager a "<pipe-message>goobook add<return>" "add sender to google contacts"
+bind editor <Tab> complete-query
+
+# folder hooks
+source "~/.mutt/account.ntu.chong"
+folder-hook 'ntu.chong' 'source ~/.mutt/account.ntu.chong'
+source "~/.mutt/account.google.chong"
+folder-hook 'google.chong' 'source ~/.mutt/account.google.chong'
+
+#Default account
+source "~/.mutt/account.ntu.chong"
+
+# Macros for switching accounts
+#macro index <f2> '<sync-mailbox><enter-command>source ~/.mutt/account.google.chong<enter><change-folder>!<enter>'
+#macro index <f3> '<sync-mailbox><enter-command>source ~/.mutt/account.ntu.chong<enter><change-folder>!<enter>'
+macro index,pager <f2> '<enter-command>source ~/.mutt/account.google.chong<enter><change-folder>!<enter>'
+macro index,pager <f3> '<enter-command>source ~/.mutt/account.ntu.chong<enter><change-folder>!<enter>'
+#
+# Fetch mail shortcut
+bind index G imap-fetch-mail
+
+# Interface customize
+source "~/git-source/mutt-colors-solarized/mutt-colors-solarized-dark-256.muttrc"
+
+set sort = threads
+set sort_aux = reverse-last-date-received
+
+color index yellow  default "~v~(!~N)~(!~F)" # collapsed thread with no New or Flagged
+color index red     default "~v~(~F)~(!~N)"  # collapsed thread with Flagged but no New
+color index green   default "~v~(~N)"        # collapsed thread with New
+
+# view html email
+set mailcap_path = "~/.mutt/mailcap"
+auto_view text/html
+alternative_order text/enriched text/plain text text/html
+
+# print message
+set print_command="/usr/bin/muttprint %s -p {PrinterName}"
+
+# on reply
+set send_charset="utf-8"
+set fast_reply=yes
+set include=yes
+
+# pager view
+set pager_index_lines = 16
+set pager_stop=yes
+
+# speedup folder switch
+#folder-hook . 'uncolor index "~b \"Hi Joe\" ~R !~T !~F !~p !~P"'
+#folder-hook ""!"" 'color index brightyellow black "~b \"Hi Joe\" ~N !~T !~F !~p !~P"'
+set sleep_time = 0
+
+# open url in mail
+#macro index,pager \cB ": unset wait_key; set pipe_decode\n|w3m\n: set wait_key; unset pipe_decode\n" "call w3m to extract URLs out of a message"
+macro index,pager \cb "<pipe-message> urlscan<Enter>" "call urlscan to extract URLs out of a message"
+macro attach,compose \cb "<pipe-entry> urlscan<Enter>" "call urlscan to extract URLs out of a message"
+
+# # Sidebar
+# #change width accordingly
+# set sidebar_width=32
+#  
+# #Visible at first, then change its value to yes
+# set sidebar_visible=yes
+#  
+# # set sidebar_delim='|'
+# # set sidebar_sort=yes
+# 
+# bind index \cp sidebar-prev
+# bind index \cn sidebar-next
+# bind index \co sidebar-open
+# bind pager \cp sidebar-prev
+# bind pager \cn sidebar-next
+# bind pager \co sidebar-open
+# macro index b '<enter-command>toggle sidebar_visible<enter><refresh>'
+# macro pager b '<enter-command>toggle sidebar_visible<enter><redraw-screen>'
+# bind index B bounce-message
+#
+# notmuch integration
+macro index <F8> \
+      "<enter-command>unset wait_key<enter><shell-escape>/bin/notmuch-mutt --prompt search<enter><change-folder-readonly>~/.cache/notmuch/mutt/results<enter>" \
+      "search mail (using notmuch)"
+macro index <F9> \
+      "<enter-command>unset wait_key<enter><pipe-message>/bin/notmuch-mutt thread<enter><change-folder-readonly>~/.cache/notmuch/mutt/results<enter><enter-command>set wait_key<enter>" \
+      "search and reconstruct owning thread (using notmuch)"

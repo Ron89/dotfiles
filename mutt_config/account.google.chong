@@ -1,0 +1,52 @@
+# unset everything:
+
+# receiving
+unset folder
+unset imap_user
+unset imap_pass
+unset ssl_force_tls
+
+# sending
+unset from
+unset realname
+unset smtp_url
+unset smtp_authenticators
+unset smtp_pass
+unset spoolfile
+unset postponed
+unset record
+
+# general
+unset header_cache
+unset message_cachedir
+unset certificate_file
+
+# setting
+# receiving
+set folder = "imaps://chong.he.1989@imap.gmail.com:993"
+set ssl_starttls = yes
+set ssl_force_tls = yes
+set imap_user = "chong.he.1989@gmail.com"
+set imap_pass = $my_pw_google
+set spoolfile = +INBOX
+set imap_check_subscribed
+set postponed = "+[Gmail]/Drafts"
+unset imap_passive
+
+# sending
+unset record
+set smtp_url = "smtp://chong.he.1989@smtp.gmail.com:587"
+set smtp_pass = $my_pw_google
+set from = "chong.he.1989@gmail.com"
+set realname = "He Chong"
+set move = no
+
+# general
+set header_cache = "~/.mutt/gmail.chong/cache/headers"
+set message_cachedir = "~/.mutt/gmail.chong/cache/bodies"
+set certificate_file = "~/.mutt/gmail.chong/certificates"
+
+# # sidebar
+# unmailboxes *
+# mailboxes = "+--Gmail content------------"
+# mailboxes =INBOX =Drafts ="[Gmail]/Sent Mail" ="[Gmail]/Starred"

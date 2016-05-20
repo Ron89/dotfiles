@@ -1,0 +1,53 @@
+# unset everything:
+
+# receiving
+unset folder
+unset ssl_starttls
+unset ssl_force_tls
+unset imap_user
+unset imap_pass
+unset spoolfile
+unset imap_check_subscribed
+unset postponed
+unset imap_passive
+
+# sending
+unset record
+unset smtp_url
+unset smtp_pass
+unset from
+unset realname
+unset move
+
+# general
+unset header_cache
+unset message_cachedir
+unset certificate_file
+
+
+# setting
+# receiving
+set folder = "imaps://outlook.office365.com:993"
+set imap_user = "my_work_email@uni.versity"
+set imap_pass = $my_pw_ntu
+set ssl_force_tls = yes
+set spoolfile = "+INBOX"
+set postponed = "+Drafts"
+
+# sending
+set from = "my_work_email@uni.versity"
+set realname = "HE Chong"
+set smtp_url = "smtp://my_work_email@uni.versity@outlook.office365.com:587/"
+set smtp_authenticators = "login"
+set smtp_pass = $my_pw_ntu 
+set record = "+Sent"
+
+# general
+set header_cache = "~/.mutt/ntu.chong/cache/headers"
+set message_cachedir = "~/.mutt/ntu.chong/cache/bodies"
+set certificate_file = "~/.mutt/ntu.chong/certificates"
+
+# # sidebar
+# unmailboxes *
+# mailboxes = "+--NTU Mail content---------"
+# mailboxes =INBOX =Drafts =Sent =Trash
