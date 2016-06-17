@@ -51,10 +51,10 @@ if exists(":tnoremap")
      tnoremap <A-k> <C-\><C-n><C-w>k
      tnoremap <A-l> <C-\><C-n><C-w>l
 endif
- nnoremap <A-h> :wincmd h<CR>
- nnoremap <A-j> :wincmd j<CR>
- nnoremap <A-k> :wincmd k<CR>
- nnoremap <A-l> :wincmd l<CR>
+ nnoremap <silent> <A-h> :wincmd h<CR>
+ nnoremap <silent> <A-j> :wincmd j<CR>
+ nnoremap <silent> <A-k> :wincmd k<CR>
+ nnoremap <silent> <A-l> :wincmd l<CR>
 
 " Toggle on/off copymode
 " nnoremap <Leader>cm :call ToggleCopyMode() <CR>
@@ -65,6 +65,12 @@ cnoremap <C-k> <C-\>estrpart(getcmdline(),0,getcmdpos()-1)<CR>
 
 " mapping tabs to corresponding spaces
  set expandtab
+
+if has('nvim')
+ nnoremap <silent> <leader>st :sp<CR>:terminal<CR>
+ tnoremap <esc> <c-\><c-n>
+endif
+
 " }}}
 
 " Mode switch{{{
@@ -73,13 +79,13 @@ inoremap jk <esc>
 " }}}
 
 " bracket editing{{{
- inoremap () ()<++><esc>F)i
- inoremap [] []<++><esc>F]i
- inoremap {} {}<++><esc>F}i
- inoremap <> <><++><esc>F>i
- inoremap '' ''<++><esc>F'i
- inoremap "" ""<++><esc>F"i
- inoremap $$ $$<++><esc>F$i
+" inoremap () ()<++><esc>F)i
+" inoremap [] []<++><esc>F]i
+" inoremap {} {}<++><esc>F}i
+" inoremap <> <><++><esc>F>i
+" inoremap '' ''<++><esc>F'i
+" inoremap "" ""<++><esc>F"i
+" inoremap $$ $$<++><esc>F$i
 
 " In coding, when typing enter in {}, insert 2 line breakers and put cursor in
 " the empty line.
@@ -100,7 +106,8 @@ endfunction
 " }}}
 
 " Omnicomplete{{{
- set complete+=.,w,b,u,U,i,d,k
+" set complete+=.,w,b,u,U,i,d,k
+ set completeopt=menu,preview
 " }}}
 
 " Editing environment{{{
@@ -346,6 +353,14 @@ endfunction
  call plug#begin('~/.vim/plugged')
 
  " general
+" Plug 'Valloric/YouCompleteMe'\
+" snippets {{{
+ Plug 'SirVer/ultisnips'
+ Plug 'honza/vim-snippets'
+" }}}
+" debugging {{{
+ Plug 'critiqjo/lldb.nvim'
+" }}}
  Plug 'tpope/vim-surround'
  Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle', 'NERDTree'] }
  " Plugins for LaTeX 
@@ -411,6 +426,8 @@ endif
  Plug 'tpope/vim-vividchalk'
  Plug 'morhetz/gruvbox'
  Plug 'vim-scripts/summerfruit256.vim'
+ Plug 'w0ng/vim-hybrid'
+ Plug 'sickill/vim-monokai'
  call plug#end()
 " }}}
 
@@ -420,17 +437,27 @@ endif
 " dragvisuals -- drag visual block
 let g:DVB_TrimWS = 1
 
-" deoplete.nvim auto-complete module {{{
- if exists(":DeopleteEnable")
-     let g:deoplete#enable_at_startup = 1
- endif
+" YouCompleteMe{{{
+ let g:ycm_python_binary_path = "/usri/bin/python"
 " }}}
-
+" snippets {{{
+ let g:UltiSnipsExpandTrigger="<tab>"
+ let g:UltiSnipsListSnippets="<c-tab>"
+ let g:UltiSnipJumpForwardTrigger="<c-h>"
+ let g:UltiSnipJumpBackwardTrigger="<c-l>"
+ let g:UltiSnipsEditSplit="vertical"
+ let g:UltiSnipsSnippetsDir="~/.vim/my-snippets"
+ let g:UltiSnipsSnippetDirectories= ['UltiSnips', 'my-snippets']
+" }}}
+"" deoplete.nvim auto-complete module {{{
+" if exists(":DeopleteEnable")
+"     let g:deoplete#enable_at_startup = 1
+" endif
+"" }}}
 " powerline initiation {{{
 " set rtp+=/usr/lib/python2.7/site-packages/powerline/bindings/vim
 " set t_Co=256
 " }}}
-
 " vim-latex configuration {{{
  let g:Tex_ViewRule_pdf='evince'
  let g:Tex_ViewRule_dvi='xdvi -s 5 -keep -hush -editor "vim --servername vimlatex --remote +\%l \%f"'
@@ -440,13 +467,16 @@ let g:DVB_TrimWS = 1
 " }}}
 " Color scheme {{{
  set background=dark
-" let g:airline_theme = 'gruvbox'
+" set background=light
+" let g:airline_theme = 'hybrid'
 " colors pencil
  colors gruvbox
  highlight Folded cterm=bold gui=bold
 
 " airline config
  let g:airline_powerline_fonts = 1
+" let g:airline_extensions = ['undotree', 'branch', 'quickfix']
+ let g:airline_section_y = &fileencoding
 "  let g:airline#extensions#tabline#enabled = 1
 "  let g:airline#extensions#tabline#left_sep = ' '
 "  let g:airline#extensions#tabline#left_alt_sep = '|'
@@ -459,11 +489,13 @@ let g:DVB_TrimWS = 1
 " let g:thesaurus_query#display_list_all_time = 1
 " let g:thesaurus_query#use_local_thesaurus_source_as_primary = 1
 " let g:thesaurus_query#enabled_backends=["thesaurus_com","datamuse_com","jeck_ru","mthesaur_txt"]
+  let g:tq_online_backends_timeout = 0.80
+  let g:tq_truncation_on_definition_num = 2
 " let g:tq_language = ['de', 'ru', 'en']
 " }}}
 " vim-session{{{
  let g:session_autosave = 'no'
- let g:session_autoload = 'no'
+ let g:sessioautoload = 'no'
 " }}}
 " Indent guide {{{
  let g:indent_guides_guide_size = 1
@@ -471,7 +503,7 @@ let g:DVB_TrimWS = 1
 " hi IndentGuidesOdd  ctermbg=lightgrey
 " hi IndentGuidesEven ctermbg=grey
  let g:indent_guides_enable_on_vim_startup = 1
- let g:indent_guides_exclude_filetypes = ['help', 'nerdtree', 'vim', 'tex', 'markdown', 'calendar']
+ let g:indent_guides_exclude_filetypes = ['help', 'nerdtree', 'vim', 'tex', 'markdown', 'calendar', 'org']
 
 " }}}
 " cmdline configuration {{{
@@ -521,7 +553,7 @@ let cmdline_follow_colorscheme = 1
 augroup pencil_Init_Per_FileType
   autocmd!
   autocmd FileType markdown,mkd call pencil#init({'wrap': 'soft'})
-  autocmd FileType text         call pencil#init({'wrap': 'hard'})
+  autocmd FileType text         call pencil#init({'wrap': 'soft'})
   autocmd FileType tex     call pencil#init({'wrap': 'soft'})
               \ | setl concealcursor=c
   autocmd FileType org     call pencil#init({'wrap': 'soft'})
@@ -530,8 +562,8 @@ augroup END
 " }}}
 " orgmode {{{
  let g:org_indent = 0
- let g:org_todo_keywords = [['TODO', 'WAITING', 'STALLED', '|', 'DONE'],
-   \   ['|', 'CANCELED']]
+ let g:org_todo_keywords = [['TODO(t)', 'WAITING(w)', 'STALLED(s)', '|', 'DONE(d)'],
+   \   ['|', 'CANCELED(c)']]
  let g:org_todo_keyword_faces = [['WAITING', 'cyan'], ['STALLED', 'yellow'],
    \   ['CANCELED', [':foreground red', ':background black', ':weight bold',
    \   ':slant italic', ':decoration underline']]]
@@ -764,6 +796,7 @@ augroup filetype_cpp
     autocmd Filetype cpp,c setlocal formatoptions=tcroqnj
      autocmd Filetype cpp,c inoremap <buffer> <CR> <esc>:call EnterBetweenBraces()<CR>a
 augroup END
+let g:clang_cpp_options = '-std=c++11 -stdlib=libc++'
 " }}}
 
 " python specific {{{
@@ -772,9 +805,14 @@ augroup END
 
 let g:python_host_prog = '/usr/bin/python2'
 let g:python3_host_prog = '/usr/bin/python'
-
 " nvim-ipy configure {{{
-" let g:nvim_ipy_perform_mappings = 0
+ let g:nvim_ipy_perform_mappings = 0
+
+" unmap <c-s>
+ map <silent> <c-s> <Plug>(IPy-Run)
+ map <silent> <leader>p? <Plug>(IPy-WordObjInfo)
+ map <silent> <leader>ps <Plug>(IPy-Interrupt)
+ map <silent> <leader>pk <Plug>(IPy-Terminate)
 " }}}
 
 augroup filetype_python
@@ -794,6 +832,7 @@ augroup IPy_vim_neo
     autocmd filetype python map <buffer><silent> <C-s> <Plug>(IPy-Run)
     autocmd filetype python map <buffer><silent> <localleader>h <Plug>(Ipy-WordObjInfo)
     autocmd filetype python map <buffer><silent> <F5> <Plug>(IPy-Interrupt)
+    autocmd filetype python nnoremap <localleader>fm :setlocal foldmethod=marker<CR>
 augroup END
 
 " }}}
@@ -832,12 +871,12 @@ augroup END
 " }}}
 
 " Markdown specific{{{
-augroup filetype_markdown
-    autocmd!
-"    autocmd BufNewFile,BufReadPost *.md set filetype=markdown
-    autocmd Filetype markdown inoremap <buffer> ``<Space> ``<++><esc>F`i
-    autocmd Filetype markdown inoremap <buffer> ``` ```<CR>```<++><esc>k$a
-augroup END
+" augroup filetype_markdown
+"     autocmd!
+" "    autocmd BufNewFile,BufReadPost *.md set filetype=markdown
+"     autocmd Filetype markdown inoremap <buffer> ``<Space> ``<++><esc>F`i
+"     autocmd Filetype markdown inoremap <buffer> ``` ```<CR>```<++><esc>k$a
+" augroup END
 " }}}
 
 "journal file definition{{{
