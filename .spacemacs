@@ -33,7 +33,7 @@ values."
      chrome
      cscope
      emacs-lisp
-     evil-cleverparens
+     ;; evil-cleverparens
      ;; evil-snipe
      ;; evil-commentary
      git
@@ -306,6 +306,8 @@ layers configuration. You are free to put any user code."
         mu4e-drafts-folder "/Gmail/Drafts"
         mu4e-trash-folder "/Gmail/Trash"
         mu4e-refile-folder "/Gmail/Deleted Messages"
+        mu4e-get-mail-command "offlineimap"
+        mu4e-update-interval 120
         user-mail-address "chong.he.1989@gmail.com"
         smtpmail-default-smtp-server "smtp.gmail.com"
         smtpmail-local-domain "gmail.com"
@@ -316,7 +318,6 @@ layers configuration. You are free to put any user code."
         message-send-mail-function 'smtpmail-send-it
         message-kill-buffer-on-exit t
         ;; get mail and send mail
-        mu4e-get-mail-command "offlineimap"
         )
   (defvar my-mu4e-account-alist
     '(("Personal"
@@ -326,6 +327,7 @@ layers configuration. You are free to put any user code."
        (mu4e-drafts-folder "/Gmail/Drafts")
        (mu4e-trash-folder "/Gmail/Trash")
        (mu4e-refile-folder "/Gmail/[Gmail].Important")
+       (mu4e-sent-messages-behavior 'delete)
        (smtpmail-smtp-user "chong.he.1989@gmail.com")
        (smtpmail-default-smtp-server "smtp.gmail.com")
        (smtpmail-local-domain "gmail.com")
@@ -340,6 +342,7 @@ layers configuration. You are free to put any user code."
        (mu4e-drafts-folder "/NTUMail/Drafts")
        (mu4e-trash-folder "/NTUMail/Trash")
        (mu4e-refile-folder "/NTUMail/Archived")
+       (mu4e-sent-messages-behavior 'sent)
        (smtpmail-smtp-user "hech0003@e.ntu.edu.sg")
        (smtpmail-default-smtp-server "outlook.office365.com")
        (smtpmail-local-domain "e.ntu.edu.sg")
@@ -367,8 +370,6 @@ layers configuration. You are free to put any user code."
         (error "No email account found"))))
 
   (add-hook 'mu4e-compose-pre-hook 'my-mu4e-set-account)
-
-  ;; yasnippet
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -380,7 +381,8 @@ layers configuration. You are free to put any user code."
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("b7b2cd8c45e18e28a14145573e84320795f5385895132a646ff779a141bbda7e" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default))))
+    ("b7b2cd8c45e18e28a14145573e84320795f5385895132a646ff779a141bbda7e" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
+ '(org-agenda-files (quote ("~/research_Documents/research/journal.org"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
