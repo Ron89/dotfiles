@@ -59,6 +59,8 @@ values."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(
                                       origami
+                                      mu4e-alert
+                                      smtpmail-multi
                                       )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(
@@ -299,19 +301,74 @@ layers configuration. You are free to put any user code."
   (add-hook 'tex-mode-hook 'TeX-fold-mode)
 
   ;; mu4e
-  (setq mu4e-maildir "~/Mail")
-  (setq mu4e-account-alist
-        '(("gmail"
-           ;; Under each account, set account specific variables you want.
-           (mu4e-sent-folder "/Gmail/[Gmail].Sent Mail")
-           (mu4e-drafts-folder "Gmail/[Gmail].Drafts")
-           (user-mail-address "chong.he.1989@gmail.com")
-           (user-full-name "HE Chong")
-           ;; don't save message to Sent Messages, Gmail/IMAP takes care of it
-           (mu4e-sent-messages-behavior 'delete)
-           )
-          )
+  (setq mu4e-maildir "~/Mail"
+        mu4e-sent-folder "/Gmail/Sent Messages"
+        mu4e-drafts-folder "/Gmail/Drafts"
+        mu4e-trash-folder "/Gmail/Trash"
+        mu4e-refile-folder "/Gmail/Deleted Messages"
+        user-mail-address "chong.he.1989@gmail.com"
+        smtpmail-default-smtp-server "smtp.gmail.com"
+        smtpmail-local-domain "gmail.com"
+        smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-stream-type 'starttls
+        smtpmail-smtp-service 587
+        smtpmail-auth-credentials (expand-file-name "~/.authinfo.gpg")
+        message-send-mail-function 'smtpmail-send-it
+        message-kill-buffer-on-exit t
+        ;; get mail and send mail
+        mu4e-get-mail-command "offlineimap"
         )
+  (defvar my-mu4e-account-alist
+    '(("Personal"
+       (user-mail-address "chong.he.1989@gmail.com")
+       (user-full-name "HE Chong")
+       (mu4e-sent-folder "/Gmail/Sent Messages")
+       (mu4e-drafts-folder "/Gmail/Drafts")
+       (mu4e-trash-folder "/Gmail/Trash")
+       (mu4e-refile-folder "/Gmail/[Gmail].Important")
+       (smtpmail-smtp-user "chong.he.1989@gmail.com")
+       (smtpmail-default-smtp-server "smtp.gmail.com")
+       (smtpmail-local-domain "gmail.com")
+       (smtpmail-smtp-server "smtp.gmail.com")
+       (smtpmail-stream-type starttls)
+       (smtpmail-smtp-service 587)
+       )
+      ("Work"
+       (user-mail-address "hech0003@e.ntu.edu.sg")
+       (user-full-name "HE Chong")
+       (mu4e-sent-folder "/NTUMail/Sent")
+       (mu4e-drafts-folder "/NTUMail/Drafts")
+       (mu4e-trash-folder "/NTUMail/Trash")
+       (mu4e-refile-folder "/NTUMail/Archived")
+       (smtpmail-smtp-user "hech0003@e.ntu.edu.sg")
+       (smtpmail-default-smtp-server "outlook.office365.com")
+       (smtpmail-local-domain "e.ntu.edu.sg")
+       (smtpmail-smtp-server "outlook.office365.com")
+       (smtpmail-stream-type starttls)
+       (smtpmail-smtp-service 587)
+       )))
+  (defun my-mu4e-set-account ()
+    "Set the account for composing a message."
+    (let* ((account
+            (if mu4e-compose-parent-message
+                (let ((maildir (mu4e-message-field mu4e-compose-parent-message :maildir)))
+                  (string-match "/\\(.*?\\)/" maildir)
+                  (match-string 1 maildir))
+              (completing-read (format "Compose with account: (%s) "
+                                       (mapconcat #'(lambda (var) (car var))
+                                                  my-mu4e-account-alist "/"))
+                               (mapcar #'(lambda (var) (car var)) my-mu4e-account-alist)
+                               nil t nil nil (caar my-mu4e-account-alist))))
+           (account-vars (cdr (assoc account my-mu4e-account-alist))))
+      (if account-vars
+          (mapc #'(lambda (var)
+                    (set (car var) (cadr var)))
+                account-vars)
+        (error "No email account found"))))
+
+  (add-hook 'mu4e-compose-pre-hook 'my-mu4e-set-account)
+
+  ;; yasnippet
   )
 
 ;; Do not write anything past this comment. This is where Emacs will

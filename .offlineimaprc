@@ -1,0 +1,39 @@
+[general]
+accounts = Gmail, NTUMail
+pythonfile = ~/.mu4e.d/bin/passwd_retriever.py
+
+[Account Gmail]
+localrepository = LocalGmail
+remoterepository = RemoteGmail
+
+[Account NTUMail]
+localrepository = LocalNTUMail
+remoterepository = RemoteNTUMail
+
+[Repository LocalGmail]
+type = Maildir
+localfolders = ~/Mail/Gmail
+
+[Repository RemoteGmail]
+type = Gmail
+remotehost = imap.gmail.com
+remoteuser = chong.he.1989@gmail.com
+remotepasseval = mailpasswd("Gmail")
+realdelete = no
+ssl = yes
+sslcacertfile = /etc/ssl/certs/ca-certificates.crt
+folderfilter = lambda foldername: foldername not in ['[Gmail]/All Mail', '[Gmail]/Spam', '[Gmail]/Trash', 'Travel', 'Work', 'Personal', 'Receipts', 'Notes']
+
+[Repository LocalNTUMail]
+type = Maildir
+localfolders = ~/Mail/NTUMail
+
+[Repository RemoteNTUMail]
+type = IMAP
+remotehost = outlook.office365.com
+remoteuser = hech0003@e.ntu.edu.sg
+remotepasseval = mailpasswd("NTUMail")
+realdelete = no
+ssl = yes
+sslcacertfile = /etc/ssl/certs/ca-certificates.crt
+folderfilter = lambda foldername: foldername in ['Archived', 'INBOX', 'Sent', 'Sent Items', 'Drafts', 'Trash']
