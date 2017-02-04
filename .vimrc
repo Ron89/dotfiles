@@ -108,6 +108,7 @@ endfunction
 " Omnicomplete{{{
 " set complete+=.,w,b,u,U,i,d,k
  set completeopt=menu,preview
+ set omnifunc=syntaxcomplete#Complete
 " }}}
 
 " Editing environment{{{
@@ -181,25 +182,24 @@ endfunction
 
 set tabline=%!MyTabLine()
 
-" " number/relative number
-" if (version == 7.4)+(version==704)
-"     set number
-"     augroup buffer_switch
-"         autocmd!
-"         autocmd BufEnter * setlocal relativenumber
-"         autocmd BufLeave * setlocal norelativenumber
-"     augroup END
-" elseif (version == 7.3)+(version==703)
-"     augroup buffer_switch
-"         autocmd!
-"         autocmd BufEnter * setlocal relativenumber
-"         autocmd BufLeave * setlocal number
-"     augroup END
-" else
-"     set number
-" endif
+" number/relative number
+if (version == 7.4)+(version>=704)
+    set number
+    augroup buffer_switch
+        autocmd!
+        autocmd BufEnter * setlocal relativenumber
+        autocmd BufLeave * setlocal norelativenumber
+    augroup END
+elseif (version == 7.3)+(version==703)
+    augroup buffer_switch
+        autocmd!
+        autocmd BufEnter * setlocal relativenumber
+        autocmd BufLeave * setlocal number
+    augroup END
+else
+    set number
+endif
 
-set number
 
 " set folding {{{
 function! NeatFoldText()
@@ -223,10 +223,10 @@ syntax enable
 
 " }}}
 
-" Tab Jumping{{{
-nnoremap tn :tabn<CR>
-nnoremap tp :tabp<CR>
-" }}}
+" " Tab Jumping{{{
+" nnoremap tn :tabn<CR>
+" nnoremap tp :tabp<CR>
+" " }}}
 
 " Indent{{{
 set autoindent
@@ -353,13 +353,22 @@ endfunction
  call plug#begin('~/.vim/plugged')
 
  " general
+ "
 " Plug 'Valloric/YouCompleteMe'\
+"" project-wise settings {{{
+" Plug 'LucHermitte/local_vimrc'
+" Plug 'LucHermitte/lh-vim-lib'
+"" }}}
 " snippets {{{
  Plug 'SirVer/ultisnips'
  Plug 'honza/vim-snippets'
+ Plug 'ron89/DoxygenToolkit.vim'
 " }}}
 " debugging {{{
  Plug 'critiqjo/lldb.nvim'
+" }}}
+" syntax highlight{{{
+ Plug 'sheerun/vim-polyglot'
 " }}}
  Plug 'tpope/vim-surround'
  Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle', 'NERDTree'] }
@@ -375,9 +384,12 @@ endfunction
  Plug 'tpope/vim-fugitive'
  Plug 'airblade/vim-gitgutter'
 " Encryption
-" Auto-complete tool set
+" Auto-complete tool set {{{
+ Plug '1995eaton/vim-better-javascript-completion'
+" }}}
 " General tools
 " Plug 'Shougo/unite-session'
+ Plug 'tomtom/tcomment_vim'
  Plug 'godlygeek/tabular', { 'on': ['Tabularize'] }
  Plug 'dhruvasagar/vim-table-mode', {'on': 'TableModeToggle' }
  Plug 'mbbill/undotree'
@@ -387,15 +399,16 @@ if version>=703 || (version>7.3 && version<10.0)
     Plug 'justmao945/vim-clang'
     Plug 'davidhalter/jedi-vim', { 'for': 'python' }
 " syntax checking
-   Plug 'scrooloose/syntastic'
 "    Plug 'chazy/cscope_maps'
     Plug 'reedes/vim-pencil'  " autowrap
 endif
 if has('nvim') 
-    Plug 'benekastah/neomake'
+"    Plug 'benekastah/neomake'
     Plug 'bfredl/nvim-ipy', { 'for': 'python' }
 "   Plug 'kassio/neoterm'
     Plug 'Shougo/deoplete.nvim'
+else
+    Plug 'Shougo/neocomplete.vim'
 endif
  Plug 'ervandew/supertab'
  Plug 'tpope/vim-markdown'
@@ -419,7 +432,17 @@ endif
  Plug 'vim-scripts/SyntaxRange'
  Plug 'ron89/vim-orgmode'
  Plug 'vim-scripts/utl.vim'
-" Color scheme
+ Plug 'joshdick/onedark.vim'
+ Plug 'joshdick/airline-onedark.vim'
+" graphviz
+ Plug 'vim-scripts/wmgraphviz'
+" javascript developing {{{
+ Plug 'marijnh/tern_for_vim'
+ Plug 'moll/vim-node'
+" }}}
+" Visual effect {{{
+ Plug 'ron89/vim-minimap'
+" Plug 'koron/minimap-vim'
  Plug 'reedes/vim-colors-pencil'
  Plug 'altercation/vim-colors-solarized'
  Plug 'romainl/Apprentice'
@@ -428,6 +451,7 @@ endif
  Plug 'vim-scripts/summerfruit256.vim'
  Plug 'w0ng/vim-hybrid'
  Plug 'sickill/vim-monokai'
+" }}}
  call plug#end()
 " }}}
 
@@ -450,9 +474,13 @@ let g:DVB_TrimWS = 1
  let g:UltiSnipsSnippetDirectories= ['UltiSnips', 'my-snippets']
 " }}}
 "" deoplete.nvim auto-complete module {{{
-" if exists(":DeopleteEnable")
-"     let g:deoplete#enable_at_startup = 1
-" endif
+if has('nvim') 
+    let g:deoplete#enable_at_startup = 1
+else
+    let g:neocomplete#enable_at_startup = 1
+    let g:neocomplete#enable_smart_case = 1
+    let g:neocomplete#sources#syntax#min_keyword_length = 3
+endif
 "" }}}
 " powerline initiation {{{
 " set rtp+=/usr/lib/python2.7/site-packages/powerline/bindings/vim
@@ -464,14 +492,21 @@ let g:DVB_TrimWS = 1
  let g:Tex_ViewRule_pdf='zathura -x "vim --servername vimlatex --remote +\%{line} \%{input}"'
  let g:Tex_CompileRule_dvi='latex -interaction=nonstopmode -src-specials $*'
  let g:Tex_CompileRule_pdf='pdflatex -synctex=1 -interaction=nonstopmode -src-specials $*'
+ let g:Tex_SmartKeyDot=0
+ let g:Tex_SmartKeyBS=0
+ let g:Tex_SmartKeyQuote=0
+ let g:Imap_FreezeImap=1
 " }}}
 " Color scheme {{{
  set background=dark
 " set background=light
-" let g:airline_theme = 'hybrid'
+" let g:airline_theme = 'onedark'
+ let g:airline_theme = 'gruvbox'
 " colors pencil
+" colors onedark
  colors gruvbox
- highlight Folded cterm=bold gui=bold
+ highlight Comment ctermfg = 243
+ highlight Folded cterm=bold gui=bold ctermbg=236 ctermfg=243
 
 " airline config
  let g:airline_powerline_fonts = 1
@@ -488,9 +523,12 @@ let g:DVB_TrimWS = 1
 " thesaurus_query options {{{
 " let g:thesaurus_query#display_list_all_time = 1
 " let g:thesaurus_query#use_local_thesaurus_source_as_primary = 1
-" let g:thesaurus_query#enabled_backends=["thesaurus_com","datamuse_com","jeck_ru","mthesaur_txt"]
+" let g:tq_enabled_backends=["openoffice_en","thesaurus_com","datamuse_com","jeck_ru","mthesaur_txt"]
+" let g:tq_enabled_backends=["openoffice_en","thesaurus_com","mthesaur_txt"]
+  let g:tq_python_version = 3
+  let g:tq_openoffice_en_file="~/.vim/thesaurus/th_en_US_v2"
   let g:tq_online_backends_timeout = 0.80
-  let g:tq_truncation_on_definition_num = 2
+" let g:tq_truncation_on_definition_num = 2
 " let g:tq_language = ['de', 'ru', 'en']
 " }}}
 " vim-session{{{
@@ -499,11 +537,11 @@ let g:DVB_TrimWS = 1
 " }}}
 " Indent guide {{{
  let g:indent_guides_guide_size = 1
-" let g:indent_guides_auto_colors = 0
-" hi IndentGuidesOdd  ctermbg=lightgrey
-" hi IndentGuidesEven ctermbg=grey
+ let g:indent_guides_auto_colors = 0
+ hi IndentGuidesOdd  ctermbg=233
+ hi IndentGuidesEven ctermbg=234
  let g:indent_guides_enable_on_vim_startup = 1
- let g:indent_guides_exclude_filetypes = ['help', 'nerdtree', 'vim', 'tex', 'markdown', 'calendar', 'org']
+ let g:indent_guides_exclude_filetypes = ['help', 'nerdtree', 'vim', 'tex', 'markdown', 'calendar', 'org', 'thesaurus']
 
 " }}}
 " cmdline configuration {{{
@@ -537,12 +575,18 @@ let g:DVB_TrimWS = 1
 " endif
 let cmdline_follow_colorscheme = 1
 " }}}
-"" supertab {{{
-"let g:SuperTabDefaultCompletionType = "context"
-"let g:SuperTabContextTextOmniPrecedence = ['&omnifunc', '&completefunc']
+" supertab {{{
+ let g:SuperTabDefaultCompletionType = "context"
+" let g:SuperTabContextTextOmniPrecedence = ['&omnifunc', '&completefunc']
+ let g:SuperTabContextTextOmniPrecedence = ['&omnifunc']
 "" }}}
+" vim-better-javascript-completion {{{
+ let g:vimjs#casesensitive=1
+ let g:vimjs#smartcomplete=0
+ let g:vimjs#chromeapis=0
+" }}}
 " vim latex live preview {{{
- let g:livepreview_previewer = 'evince'
+ let g:livepreview_previewer = 'okular'
  set updatetime=8000
 " }}}
 " pencil mode {{{
@@ -569,7 +613,7 @@ augroup END
    \   ':slant italic', ':decoration underline']]]
  let g:org_prefer_insert_mode = 0
  let g:org_aggressive_conceal = 1
-"}}}
+" }}}
 " Calendar {{{
  let g:calendar_google_calendar = 1
  let g:calendar_google_task = 1
@@ -579,43 +623,25 @@ let g:languagetool_jar='$HOME/Softwares/LanguageTool-3.2/languagetool-commandlin
 " }}}
 " neo-make/syntastic setup {{{
 set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
+" set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 
-" <+temporary+>
-if has('nvim')
-  augroup NeoMake
-   autocmd!
-   autocmd! BufReadPost * Neomake
-   autocmd! BufWritePost * Neomake
-  augroup END
-"  let g:neomake_python_pylint_exe = 'pylint2'
-"  let g:neomake_python_pep8_exe = 'pep8-python2'
+"  augroup NeoMake
+"   autocmd!
+"   autocmd! BufReadPost * Neomake
+"   autocmd! BufWritePost * Neomake
+"  augroup END
+  let g:neomake_python_pylint_exe = 'pylint2'
+  let g:neomake_python_pep8_exe = 'pep8-python2'
   let g:neomake_python_enabled_makers = ['pylint']
   let g:neomake_verbose = 1
   let g:neomake_error_sign = {
      \ 'texthl': 'ErrorMsg',
      \ }
-  " disable syntastic
-  let g:syntastic_mode_map = {"mode": "passive"}
-else
- if !exists("g:syntastic_mode_map")
-    let g:syntastic_mode_map = {"mode": "active"}
- else
-    let g:syntastic_mode_map["mode"] = "active"
- endif
-     let g:syntastic_always_populate_loc_list = 1
-     let g:syntastic_auto_loc_list = 1
-     let g:syntastic_check_on_open = 1
-     let g:syntastic_check_on_wq = 0
-     
-"     let g:syntastic_python_python_exec = 'python2'
-     let g:syntastic_python_checkers = ['pylint']
-"     let g:syntastic_python_flake8_exec = 'flake8-python2'
-"     let g:syntastic_python_pylint_exec = 'pylint2'
-     let g:syntastic_quiet_messages = { "level": "warnings" }
-     let g:syntastic_python_pylint_quiet_messages = { "level" : ["warnings"] }
-endif
+  let g:neomake_cpp_enable_makers = ['clang']
+  let g:neomake_cpp_clang_maker = {
+              \'exe': 'clang',
+              \'args': ['-std', 'c++11', '-stdlib', 'libc++']}
 
 " " }}}
 " utl {{{
@@ -638,6 +664,12 @@ endif
 " " Use 256 colours (Use this setting only if your terminal supports 256 colours)
 " set t_Co=256
 " " }}}
+" vim-minimap {{{
+ let g:minimap_show='<leader>mm'
+ let g:minimap_update='<leader>mu'
+ let g:minimap_close='<leader>mc'
+ let g:minimap_toggle='<leader>mt'
+" }}}
 " }}}
 
 " function initialization {{{
@@ -920,6 +952,14 @@ augroup END
 augroup mailfiletypedetect
   autocmd BufRead /tmp/mutt-* set tw=72
   autocmd BufRead,BufNewFile *mutt-*              setfiletype mail
+augroup END
+" }}}
+
+" as javascript editor {{{
+augroup filetype_javascript
+    autocmd!
+    autocmd Filetype javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+    autocmd Filetype javascript setlocal omnifunc=tern#Complete
 augroup END
 " }}}
 
